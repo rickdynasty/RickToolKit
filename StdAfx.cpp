@@ -28,3 +28,12 @@ CString GetFileSuffix(const CString fileName){
 
 	return suffix;
 }
+
+CString GetFileName(const CString file){
+	int dotPos = file.ReverseFind('\\');
+	if(-1 == dotPos){
+		dotPos = file.ReverseFind('/');
+	}
+
+	return file.Right(file.GetLength() - dotPos - 1);
+}

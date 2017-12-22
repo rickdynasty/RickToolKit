@@ -20,6 +20,7 @@ JavaFileAnalyzer::JavaFileAnalyzer()
 {
 	mAnalyzeRlt.clear();
 	pLogUtils = new LogUtils();
+	mForRes = false;
 }
 
 JavaFileAnalyzer::~JavaFileAnalyzer()
@@ -34,6 +35,10 @@ void JavaFileAnalyzer::recycleLogUtils(){
 	}
 }
 
+void JavaFileAnalyzer::setForRes(bool forRes){
+	mForRes = forRes;
+}
+
 void JavaFileAnalyzer::setSuffix(CString suffix){
 	mSuffix = suffix;
 }
@@ -45,9 +50,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		pLogUtils->e("文件："+file+" 并不是java类文件，请确认输入...");
 		return;
 	}
-
-	JavaClass jClass;
-	jClass.filePath = file;
+	
 	CStdioFile readFile;
 	if(FALSE == readFile.Open(file, CFile::modeRead)){
 		//读取失败
@@ -55,18 +58,22 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		return;
 	}
 	
+	JavaClass jClass;
+	jClass.filePath = file;
+	mAnalyzeRlt.insert(pair<CString, JavaClass>(GetFileName(file), jClass));
+
 	bool isNote = false;
-	bool isGetPackage = false;
-	bool isPassImport = false;
+	bool isPassPackage = false;
+	bool isPassClassName = false;
 	bool isContent = false;
 	const int cPackageKeyLen = JAVA_FILE_PACKAGE_KEY.GetLength();
 	const int cImprotKeyLen = JAVA_FILE_IMPROT_KEY.GetLength();
 	const int cJavaNoteBeginFlgLen = JAVA_NOTE_FLG_BEGIN.GetLength();	
-	const int cJavaNoteEndFlgLen = JAVA_NOTE_FLG_END.GetLength();
-
+	const int cJavaNoteEndFlgLen = JAVA_NOTE_FLG_END.GetLength();	
+	const int cJavaClassFlgLen = JAVA_FILE_CLASS_KEY.GetLength();
 	
-	CString readLine,log;
-		
+	CString readLine,log,prefix;
+	
 	int findPos = -1;
 	int startPos = 0;
 	int lineCount = 0;
@@ -89,7 +96,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				continue;
 			}
 		}
-
+		
 		//多行注释还没结束
 		if(isNote){
 			findPos = readLine.Find(JAVA_NOTE_FLG_END, 0);
@@ -120,15 +127,105 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			}else{
 				break;
 			}
-
+			
 			startPos = findPos + cJavaNoteEndFlgLen;
 			findPos = readLine.Find(JAVA_NOTE_FLG_BEGIN, startPos);
 		}
-
+		
 		if(isNote){
 			continue;
 		}
-	}//while(readFile.ReadString(readLine))
 
+		//开始处理java内容块
+		
+		//先判断是否获取到了package
+		if(!isPassPackage){
+			prefix = readLine.Left(cPackageKeyLen);
+			startPos = cPackageKeyLen;
+			findPos = readLine.Find(PACKAGE_or_IMPROT_EDN_FLG, startPos);
+			jClass.packageName = readLine.Mid(startPos, findPos - startPos + 1);
+
+			if(prefix == JAVA_FILE_PACKAGE_KEY){
+				//是package语句
+				isPassPackage = true;
+			}
+			
+			continue;			
+		}
+
+		//如果没有结束import，就先收集
+		//cJavaClassFlgLen
+		if(!isPassClassName){
+			//查找获取 " class "
+			findPos = readLine.Find(JAVA_FILE_CLASS_KEY, 0);
+			if(-1 < findPos){
+				startPos = findPos + cJavaClassFlgLen;
+				// Find 类名后面的空格
+				findPos = readLine.Find(SPACE_FLG, startPos);
+				if(findPos < startPos){
+					//如果这里没找到class的后面的结尾符，就直接报错返回
+					log.Format("文件：%s 行：%d 内容：%s 解析类名失败~，请检测语法规则...", file, lineCount, readLine);
+					pLogUtils->e(log);
+
+					readFile.Close();
+					return;
+				}
+				//得到类名
+				jClass.className = readLine.Mid(startPos, findPos - startPos + 1);
+				startPos = findPos + 1;
+				//尝试查找类的实现开始“{”
+				findPos = readLine.Find(JAVA_CLASS_BODY_BEGIN, startPos);
+				if(findPos < 0){
+					//内部继续往下读取直到找到了“{”
+					CString inheritanceRelationship = readLine.Mid(startPos);
+					while(readFile.ReadString(readLine)){
+						++lineCount;
+						readLine.TrimLeft();
+						readLine.TrimRight();
+						findPos = readLine.Find(JAVA_CLASS_BODY_BEGIN, 0);
+						if(-1 <findPos){
+							if(0 < findPos){
+								inheritanceRelationship+= readLine.Mid(0, findPos);
+							}
+							break;
+						} else {
+							inheritanceRelationship+= readLine;
+						}
+					}
+					dillClassInheritanceRelationship(inheritanceRelationship, jClass);
+				} else {
+					dillClassInheritanceRelationship(readLine.Mid(startPos, findPos - startPos + 1), jClass);
+				}
+
+				isPassClassName = true;
+				continue;	//不管找没找到类名的结束符“{”，都不需要继续解读当前行了，直接continue 走下一行
+			} else {
+				//既然没有找到 类名，那就继续收集improt
+				findPos = readLine.Find(JAVA_FILE_IMPROT_KEY, 0);
+				if(findPos < 0) continue;
+
+				startPos = findPos + cImprotKeyLen;
+				findPos = readLine.Find(PACKAGE_or_IMPROT_EDN_FLG, startPos);
+				if(findPos < startPos){
+					//如果这里没找到class的后面的结尾符，就直接报错返回
+					log.Format("文件：%s 行：%d 内容：%s 没发找到import结束符，请检查语法规则...", file, lineCount, readLine);
+					pLogUtils->e(log);
+					
+					readFile.Close();
+					return;
+				}
+				jClass.vReferencedClass.push_back(readLine.Mid(startPos, findPos - startPos + 1));
+			}
+		}//if(!isPassClassName)
+
+	}//while(readFile.ReadString(readLine))
+	
 	readFile.Close();
+}
+
+//内容：“ extends View implements ViewPager.OnPageChangeListener, OnTabItemCenterPosListener ”
+//“ extends WupBaseResult ”
+//或者是空的
+void JavaFileAnalyzer::dillClassInheritanceRelationship(const CString content, JavaClass& javaClass){
+
 }

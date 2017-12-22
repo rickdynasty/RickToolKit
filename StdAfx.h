@@ -48,8 +48,12 @@ const CString JAVA_NOTE_FLG_BEGIN ="/*";
 const CString JAVA_NOTE_FLG_END ="*/";
 
 //
-const CString JAVA_FILE_PACKAGE_KEY = "package";
-const CString JAVA_FILE_IMPROT_KEY = "import";
+const CString JAVA_FILE_PACKAGE_KEY = "package ";
+const CString JAVA_FILE_IMPROT_KEY	= "import ";
+const CString JAVA_FILE_CLASS_KEY	= " class ";
+const CString PACKAGE_or_IMPROT_EDN_FLG = ";";
+const CString SPACE_FLG				= " ";
+const CString JAVA_CLASS_BODY_BEGIN = "{";
 
 //ÊôÐÔ¹Ø¼ü×Ö
 const CString KEYWORD_PUBLIC		= "public";
@@ -68,6 +72,7 @@ const CString ANALYSIS_WARN_LOG = "\\log_warn.txt";
 CString GetCurrentProDirectory();
 CString GetLogDirectory();
 CString GetFileSuffix(const CString fileName);
+CString GetFileName(const CString file);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

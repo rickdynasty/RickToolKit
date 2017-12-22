@@ -89,7 +89,7 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 		if(targetSuffix == GetFileSuffix(fileName)){
 			//扫描到了目标文件
 			//Write code here^
-			pFileAnalyzer->analyzerFile(fileName);
+			pFileAnalyzer->analyzerFile(filePath);
 		}else{
 			continue;//不是目标文件，直接略过...
 		}
