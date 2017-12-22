@@ -18,19 +18,19 @@ class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg();
-
-// Dialog Data
+	
+	// Dialog Data
 	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
 	//}}AFX_DATA
-
+	
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAboutDlg)
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
-
-// Implementation
+	
+	// Implementation
 protected:
 	//{{AFX_MSG(CAboutDlg)
 	//}}AFX_MSG
@@ -51,19 +51,19 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-	//{{AFX_MSG_MAP(CAboutDlg)
-		// No message handlers
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CAboutDlg)
+// No message handlers
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CRickToolKitDlg dialog
 
 CRickToolKitDlg::CRickToolKitDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CRickToolKitDlg::IDD, pParent)
+: CDialog(CRickToolKitDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CRickToolKitDlg)
-		// NOTE: the ClassWizard will add member initialization here
+	// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -73,17 +73,18 @@ void CRickToolKitDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CRickToolKitDlg)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
+	// NOTE: the ClassWizard will add DDX and DDV calls here
 	//}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CRickToolKitDlg, CDialog)
-	//{{AFX_MSG_MAP(CRickToolKitDlg)
-	ON_WM_SYSCOMMAND()
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BTN_ANALYSIS, OnBtnAnalysis)
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CRickToolKitDlg)
+ON_WM_SYSCOMMAND()
+ON_WM_PAINT()
+ON_WM_QUERYDRAGICON()
+ON_BN_CLICKED(IDC_BTN_ANALYSIS_LAZY_CLASS, OnBtnAnalysisLazyClass)
+ON_BN_CLICKED(IDC_BTN_ANALYSIS_LAZY_RES, OnBtnAnalysisLazyRes)
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,13 +93,13 @@ END_MESSAGE_MAP()
 BOOL CRickToolKitDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
+	
 	// Add "About..." menu item to system menu.
-
+	
 	// IDM_ABOUTBOX must be in the system command range.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
-
+	
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
 	{
@@ -110,13 +111,14 @@ BOOL CRickToolKitDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
-
+	
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	// TODO: Add extra initialization here
+	pFileUtils = new FileUtils();
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -143,9 +145,9 @@ void CRickToolKitDlg::OnPaint()
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // device context for painting
-
+		
 		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
-
+		
 		// Center icon in client rectangle
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
@@ -153,7 +155,7 @@ void CRickToolKitDlg::OnPaint()
 		GetClientRect(&rect);
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
-
+		
 		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
 	}
@@ -170,15 +172,29 @@ HCURSOR CRickToolKitDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void CRickToolKitDlg::OnBtnAnalysis() 
+//开始分析冗余类
+void CRickToolKitDlg::OnBtnAnalysisLazyClass() 
 {
 	if(!IsDirExist(mPath)){
-		//MessageBox("请先选择有效文件夹进行分析");
+		//MessageBox("请先选择有效的工程文件夹进行分析");
 		choosePath();
 		return;
 	}
+	
+	if(NULL == pFileUtils){
+		pFileUtils = new FileUtils();
+	}
 
-	MessageBox("分析ing");
+	MessageBox(pFileUtils->analysisLazyClass(mPath));
+}
+
+void CRickToolKitDlg::OnBtnAnalysisLazyRes() 
+{
+	if(!IsDirExist(mPath)){
+		//MessageBox("请先选择有效的工程文件夹进行分析");
+		choosePath();
+		return;
+	}
 }
 
 // 判断文件夹是否存在
@@ -192,7 +208,7 @@ BOOL CRickToolKitDlg::IsDirExist(const CString & csDir)
 void CRickToolKitDlg::choosePath(){
     TCHAR path[127];
     BROWSEINFO bi = { 0 };
-    bi.lpszTitle = ("选择要分析的内容路径~");
+    bi.lpszTitle = ("选择要分析的工程路径~");
     LPITEMIDLIST pidl = SHBrowseForFolder ( &bi );
     
     if ( pidl != 0 )
@@ -205,7 +221,7 @@ void CRickToolKitDlg::choosePath(){
         SetCurrentDirectory ( path );
 		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
 		pEdit->SetWindowText(mPath);
-
+		
         // 释放内存
         IMalloc * imalloc = 0;
         if ( SUCCEEDED( SHGetMalloc ( &imalloc )) )

@@ -8,6 +8,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "FileUtils.h"
 /////////////////////////////////////////////////////////////////////////////
 // CRickToolKitDlg dialog
 
@@ -45,9 +46,13 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnBtnAnalysis();
+	afx_msg void OnBtnAnalysisLazyClass();
+	afx_msg void OnBtnAnalysisLazyRes();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+private:
+	FileUtils* pFileUtils;
 };
 
 //{{AFX_INSERT_LOCATION}}

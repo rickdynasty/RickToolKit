@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (中国) resources
+// Chinese (P.R.C.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
@@ -91,7 +91,8 @@ CAPTION "RickToolKit"
 FONT 9, "宋体"
 BEGIN
     EDITTEXT        IDC_EDIT_PATH,7,13,133,16,ES_AUTOHSCROLL
-    PUSHBUTTON      "开始分析",IDC_BTN_ANALYSIS,7,36,50,14
+    PUSHBUTTON      "点击分析冗余类",IDC_BTN_ANALYSIS_LAZY_CLASS,7,36,86,14
+    PUSHBUTTON      "点击分析冗余资源",IDC_BTN_ANALYSIS_LAZY_RES,7,54,86,14
 END
 
 
@@ -175,7 +176,7 @@ BEGIN
     IDS_ABOUTBOX            "关于 RickToolKit(&A)..."
 END
 
-#endif    // Chinese (中国) resources
+#endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

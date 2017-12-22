@@ -4,5 +4,27 @@
 
 #include "stdafx.h"
 
+CString GetCurrentProDirectory(){
+	CString currentDirectory;
+	//获取当前文件夹路径
+	GetCurrentDirectory(MAX_PATH,currentDirectory.GetBuffer(MAX_PATH));
+	currentDirectory.ReleaseBuffer();
+	
+	return currentDirectory;
+}
 
+CString GetLogDirectory(){
+	return GetCurrentProDirectory() + ANALYSIS_RLT_LOG_POS_PREFIX;
+}
 
+CString GetFileSuffix(const CString fileName){
+	int dotPos = fileName.ReverseFind('.');
+	if(-1 == dotPos){
+		return "";
+	}
+	
+	CString suffix = fileName.Right(fileName.GetLength() - dotPos - 1);
+	suffix.MakeLower();
+
+	return suffix;
+}

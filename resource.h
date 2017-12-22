@@ -9,6 +9,8 @@
 #define IDR_MAINFRAME                   128
 #define IDC_EDIT_PATH                   1000
 #define IDC_BTN_ANALYSIS                1001
+#define IDC_BTN_ANALYSIS_LAZY_CLASS     1001
+#define IDC_BTN_ANALYSIS_LAZY_RES       1002
 
 // Next default values for new objects
 // 
