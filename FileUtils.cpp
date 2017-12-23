@@ -55,12 +55,16 @@ void FileUtils::createFileAnalyzer(const CString suffixFlg){
 CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProjectPath)
 {
 	createFileAnalyzer(SUFFIX_JAVA);
+	pFileAnalyzer->clear();
+
 	scanFolderForSuffix(projectPath, SUFFIX_JAVA);
-	if(NULL != additionalProjectPath && !additionalProjectPath.IsEmpty()){
+	if(!additionalProjectPath.IsEmpty()){
 		scanFolderForSuffix(additionalProjectPath, SUFFIX_JAVA);
 	}
 
-	return "finish";
+	pFileAnalyzer->printResult();
+
+	return pFileAnalyzer->getAnalyzerRltDes();
 }
 
 void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
@@ -78,7 +82,7 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 		fileName = fileFind.GetFileName();
 		if(fileFind.IsDirectory()){
 			//这里过滤掉 配置&缓存文件夹：.git .gradle 输出等
-			if("build" == fileName || "gradle" == fileName || '.' == fileName.GetAt(0)){
+			if("build" == fileName || "gradle" == fileName || '.' == fileName.GetAt(0) || "Log" == fileName){
 				continue;
 			}
 			

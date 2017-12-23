@@ -19,8 +19,11 @@ protected:
 	CString mSuffix;
 	
 public:
-    virtual void analyzerFile(const CString file) = 0;//´¿Ðéº¯Êý
-	virtual void setSuffix(CString suffix) = 0;//´¿Ðéº¯Êý
+    virtual void analyzerFile(const CString file) = 0;
+	virtual void setSuffix(CString suffix) = 0;
+	virtual void clear() = 0;
+	virtual void printResult() = 0;
+	virtual CString getAnalyzerRltDes(){ return ANALYSIS_RESULT_DEFAULT_DES;}
 	virtual CString getSuffix(){ return mSuffix;}
 };
 

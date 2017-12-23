@@ -30,10 +30,32 @@ CString GetFileSuffix(const CString fileName){
 }
 
 CString GetFileName(const CString file){
-	int dotPos = file.ReverseFind('\\');
-	if(-1 == dotPos){
-		dotPos = file.ReverseFind('/');
+	int separatorPos = file.ReverseFind('\\');
+	if(-1 == separatorPos){
+		separatorPos = file.ReverseFind('/');
 	}
 
-	return file.Right(file.GetLength() - dotPos - 1);
+	if(-1 == separatorPos){
+		separatorPos = 0;
+	}
+
+	return file.Right(file.GetLength() - separatorPos - 1);
+}
+
+CString GetFileNameWithoutSuffix(const CString file){
+	int separatorPos = file.ReverseFind('\\');
+	if(-1 == separatorPos){
+		separatorPos = file.ReverseFind('/');
+	}
+
+	if(-1 == separatorPos){
+		separatorPos = 0;
+	}
+	
+	int dotPos = file.ReverseFind('.');
+	if(dotPos < separatorPos){
+		dotPos = file.GetLength();
+	}
+
+	return file.Mid(separatorPos + 1, dotPos - separatorPos -1);
 }

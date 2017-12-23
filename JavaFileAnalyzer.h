@@ -26,8 +26,10 @@ public:
 	JavaFileAnalyzer();
 	virtual ~JavaFileAnalyzer();
 	virtual void setSuffix(CString suffix);
+	virtual void clear();
 	void setForRes(bool forRes);
-	
+	virtual void printResult();	//´òÓ¡½á¹û
+	virtual CString getAnalyzerRltDes();
 private:
 	void recycleLogUtils();
 	void dillClassInheritanceRelationship(const CString content, JavaClass& javaClass);
@@ -38,7 +40,9 @@ public:
 private:
 	LogUtils* pLogUtils;
 	map<CString, JavaClass> mAnalyzeRlt;
+	map<CString, CString> mClassCache;
 	bool mForRes;
+	CString mRltDes;
 };
 
 #endif // !defined(AFX_JAVAFILEANALYZER_H__83F03EF7_0CC8_41F8_84E6_EAFD925AC683__INCLUDED_)

@@ -43,6 +43,42 @@ void JavaFileAnalyzer::setSuffix(CString suffix){
 	mSuffix = suffix;
 }
 
+void JavaFileAnalyzer::clear(){
+	mAnalyzeRlt.clear();
+	mClassCache.clear();
+	mRltDes = ANALYSIS_RESULT_DEFAULT_DES;
+	mForRes = false;
+}
+
+void JavaFileAnalyzer::printResult(){
+}
+
+CString JavaFileAnalyzer::getAnalyzerRltDes(){
+	//	map<CString, JavaClass> mAnalyzeRlt;
+	//  map<CString, CString> mClassCache;
+	mRltDes = "";
+	if(0 < mAnalyzeRlt.size()){
+		mRltDes.Format("一共%d个java类文件", mAnalyzeRlt.size());
+	}
+
+	if(mAnalyzeRlt.size() != mClassCache.size()){
+		CString tmpDes;
+		tmpDes.Format(",类的数量却是：%d个", mClassCache.size());
+		mRltDes += tmpDes;
+	}
+
+	if(0 < mClassCache.size()){
+		map<CString, CString>::iterator it = mClassCache.begin();
+		while(it != mClassCache.end())
+		{
+			pLogUtils->d(it->first);
+			it ++;         
+		}
+	}
+
+	return mRltDes;
+}
+
 void JavaFileAnalyzer::analyzerFile(const CString file){
 	if(0 != mSuffix.CompareNoCase(GetFileSuffix(file)))
 	{
@@ -58,9 +94,9 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		return;
 	}
 	
+	CString mapKey;
 	JavaClass jClass;
 	jClass.filePath = file;
-	mAnalyzeRlt.insert(pair<CString, JavaClass>(GetFileName(file), jClass));
 
 	bool isNote = false;
 	bool isPassPackage = false;
@@ -140,14 +176,45 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		
 		//先判断是否获取到了package
 		if(!isPassPackage){
-			prefix = readLine.Left(cPackageKeyLen);
-			startPos = cPackageKeyLen;
-			findPos = readLine.Find(PACKAGE_or_IMPROT_EDN_FLG, startPos);
-			jClass.packageName = readLine.Mid(startPos, findPos - startPos + 1);
-
+			prefix = readLine.Left(cPackageKeyLen);			
 			if(prefix == JAVA_FILE_PACKAGE_KEY){
 				//是package语句
 				isPassPackage = true;
+				
+				startPos = cPackageKeyLen;
+				findPos = readLine.Find(PACKAGE_or_IMPROT_EDN_FLG, startPos);
+				if(findPos < startPos){
+					log.Format("文件：%s 行：%d 内容：%s 出现了package关键字，却没找到结束符【不规范写法】", file, lineCount, readLine);
+					pLogUtils->w(log);
+
+					readFile.Close();
+					return;
+				}
+				jClass.packageName = readLine.Mid(startPos, findPos - startPos);
+				jClass.className = GetFileNameWithoutSuffix(file);
+
+				mapKey = jClass.packageName + "." + jClass.className;
+				if(0 < mAnalyzeRlt.count(mapKey)){
+					//已经存在这个class
+					log.Format("文件：%s mapKey = %s 已经存在于[file:%s]", file, mapKey, mAnalyzeRlt[mapKey]);
+					pLogUtils->e(log);
+					
+					readFile.Close();
+					return;
+				}
+				else{
+					mAnalyzeRlt.insert(pair<CString, JavaClass>(mapKey, jClass));
+				}
+				
+				//将类名缓存起来做比对
+				mapKey = jClass.className;
+				if(0<mClassCache.count(mapKey)){
+					//已经存在这个class名称的类
+					log.Format("文件：%s className = %s 已经存在于[file:%s]", file, jClass.className, mClassCache[mapKey]);
+					pLogUtils->w(log);
+				}else{
+					mClassCache.insert(pair<CString, CString>(mapKey, jClass.filePath));
+				}
 			}
 			
 			continue;			

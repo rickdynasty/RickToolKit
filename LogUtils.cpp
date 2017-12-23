@@ -26,7 +26,7 @@ LogUtils::LogUtils(CString folderName)
 	
 	//获取当前文件夹路径
 	mLogFolder = GetLogDirectory();
-	if(NULL != folderName && !folderName.IsEmpty()){		
+	if(!folderName.IsEmpty()){
 		mLogFolder += ("\\"+folderName);
 	}
 
@@ -47,29 +47,35 @@ void LogUtils::d(CString log){
 	if(false == bLogOpen){
 		::DeleteFile(mLogFolder + ANALYSIS_RESULT_LOG);
 		bLogOpen = mLogFile.Open(mLogFolder + ANALYSIS_RESULT_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
-		bLogOpen = true;
 	}
-	mLogFile.WriteString(GetCurrentTime()+" "+log);
+
+	if(bLogOpen){
+		mLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+	}
 }
 
 void LogUtils::e(CString log){
 	if(false == bErrorLogOpen){
 		::DeleteFile(mLogFolder + ANALYSIS_ERROR_LOG);
-		mErrorLogFile.Open(mLogFolder + ANALYSIS_ERROR_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
-		bErrorLogOpen = true;
+		bErrorLogOpen = mErrorLogFile.Open(mLogFolder + ANALYSIS_ERROR_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
 	}
-	mErrorLogFile.WriteString(GetCurrentTime()+" "+log);
-	++iErrorCount;
+	
+	if(bErrorLogOpen){
+		mErrorLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		++iErrorCount;
+	}
 }
 
 void LogUtils::w(CString log){
 	if(false == bWarnLogOpen){
 		::DeleteFile(mLogFolder + ANALYSIS_WARN_LOG);
 		bWarnLogOpen = mWarnLogFile.Open(mLogFolder + ANALYSIS_WARN_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
-		bWarnLogOpen = true;
 	}
-	mWarnLogFile.WriteString(GetCurrentTime()+" "+log);
-	++iWarnCount;
+
+	if(bWarnLogOpen){
+		mWarnLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		++iWarnCount;
+	}
 }
 
 int LogUtils::getErrorCount(){

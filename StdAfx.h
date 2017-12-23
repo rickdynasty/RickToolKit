@@ -36,6 +36,11 @@ typedef struct{
 #define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 #define FILE_ATTRIBUTE_DIRECTORY            0x00000010
 
+const CString ANALYSIS_RESULT_DEFAULT_DES = "Analysis completed";
+
+const CString LINE_BREAK = "\n";
+const CString LINE_TABLE = "\t";
+
 //ÎÄ¼þºó×º
 const CString SUFFIX_PNG	="png";
 const CString SUFFIX_XML	="xml";
@@ -73,6 +78,7 @@ CString GetCurrentProDirectory();
 CString GetLogDirectory();
 CString GetFileSuffix(const CString fileName);
 CString GetFileName(const CString file);
+CString GetFileNameWithoutSuffix(const CString file);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

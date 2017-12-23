@@ -119,6 +119,9 @@ BOOL CRickToolKitDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 	pFileUtils = new FileUtils();
+
+	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
+	pEdit->SetWindowText("点击下面的功能按钮，选择要分析的Project路径...");
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -175,11 +178,11 @@ HCURSOR CRickToolKitDlg::OnQueryDragIcon()
 //开始分析冗余类
 void CRickToolKitDlg::OnBtnAnalysisLazyClass() 
 {
-	if(!IsDirExist(mPath)){
-		//MessageBox("请先选择有效的工程文件夹进行分析");
-		choosePath();
-		return;
-	}
+	//if(!IsDirExist(mPath)){
+	//MessageBox("请先选择有效的工程文件夹进行分析");
+	choosePath();
+	//return;
+	//}
 	
 	if(NULL == pFileUtils){
 		pFileUtils = new FileUtils();
