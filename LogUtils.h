@@ -14,6 +14,7 @@ class LogUtils
 public:
 	LogUtils(CString folderName = "");
 	virtual ~LogUtils();
+	void closeOpenLogFile();
 
 private:	
 	CString GetCurrentTime();

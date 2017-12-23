@@ -30,10 +30,12 @@ public:
 	void setForRes(bool forRes);
 	virtual void printResult();	//´òÓ¡½á¹û
 	virtual CString getAnalyzerRltDes();
+	virtual void closeOpenFile();
+
 private:
 	void recycleLogUtils();
 	void dillClassInheritanceRelationship(const CString content, JavaClass& javaClass);
-
+	void scanReferencedClassVector(const vector<CString> vReferencedClass);
 public:
     virtual void analyzerFile(const CString file);
 	

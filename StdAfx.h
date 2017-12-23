@@ -23,6 +23,12 @@
 using namespace std;
 
 typedef struct{
+	void init(){
+		usedCount = 0;
+		vReferencedClass.clear();
+		vImplementsInterfaces.clear();
+		vMethods.clear();
+	}
 	CString filePath;						//文件全路径
 	CString packageName;					//包名
 	vector<CString> vReferencedClass;		//引用的类【用于标记那些类在使用】
@@ -56,8 +62,11 @@ const CString JAVA_NOTE_FLG_END ="*/";
 const CString JAVA_FILE_PACKAGE_KEY = "package ";
 const CString JAVA_FILE_IMPROT_KEY	= "import ";
 const CString JAVA_FILE_CLASS_KEY	= " class ";
+const CString JAVA_FILE_EXTENDS_KEY	= "extends ";
+const CString JAVA_FILE_IMPLEMENTS_KEY	= "implements ";
 const CString PACKAGE_or_IMPROT_EDN_FLG = ";";
 const CString SPACE_FLG				= " ";
+const CString COMMA_FLG				= ",";
 const CString JAVA_CLASS_BODY_BEGIN = "{";
 
 //属性关键字
@@ -79,6 +88,8 @@ CString GetLogDirectory();
 CString GetFileSuffix(const CString fileName);
 CString GetFileName(const CString file);
 CString GetFileNameWithoutSuffix(const CString file);
+bool IsDirExist(const CString & csDir);
+void ensureDir(const CString & csDir);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

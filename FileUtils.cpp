@@ -64,7 +64,11 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 
 	pFileAnalyzer->printResult();
 
-	return pFileAnalyzer->getAnalyzerRltDes();
+	CString analyzerRlt = pFileAnalyzer->getAnalyzerRltDes();
+	//最后关闭打开的文件
+	pFileAnalyzer->closeOpenFile();
+
+	return analyzerRlt;
 }
 
 void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){

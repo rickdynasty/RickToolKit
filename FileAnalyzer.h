@@ -25,6 +25,7 @@ public:
 	virtual void printResult() = 0;
 	virtual CString getAnalyzerRltDes(){ return ANALYSIS_RESULT_DEFAULT_DES;}
 	virtual CString getSuffix(){ return mSuffix;}
+	virtual void closeOpenFile() = 0;
 };
 
 #endif // !defined(AFX_FILEANALYZER_H__91661F81_F3AF_4935_9567_BA937E188B06__INCLUDED_)

@@ -50,7 +50,49 @@ void JavaFileAnalyzer::clear(){
 	mForRes = false;
 }
 
+void JavaFileAnalyzer::closeOpenFile(){
+	//结束的时候是否持有的Log文件句柄
+	pLogUtils->closeOpenLogFile();
+}
+
 void JavaFileAnalyzer::printResult(){
+	if(mAnalyzeRlt.size() < 1)
+		return;
+
+	map<CString, JavaClass>::iterator iter;
+	//处理引用计数
+	CString str;
+	iter = mAnalyzeRlt.begin();
+	while(iter != mAnalyzeRlt.end())
+	{
+		str = iter->first;
+		scanReferencedClassVector(iter->second.vReferencedClass);
+		iter++;
+	}
+	
+	//打印结果
+	iter = mAnalyzeRlt.begin();
+	while(iter != mAnalyzeRlt.end())
+	{
+		str.Format("类：%s 被引用了 %d 次", iter->first, iter->second.usedCount);
+		pLogUtils->d(str);
+		iter++;
+	}
+}
+
+void JavaFileAnalyzer::scanReferencedClassVector(const vector<CString> vReferencedClass){
+	CString str;
+	JavaClass javaClass;
+	const int count = vReferencedClass.size();
+	for (int i = 0; i < count; i++)
+	{
+		str = vReferencedClass[i];
+		int keyCount = mAnalyzeRlt.count(str);
+		if(0 < keyCount){
+			javaClass = mAnalyzeRlt[vReferencedClass[i]];
+			++javaClass.usedCount;
+		}
+	}
 }
 
 CString JavaFileAnalyzer::getAnalyzerRltDes(){
@@ -95,8 +137,10 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	}
 	
 	CString mapKey;
-	JavaClass jClass;
-	jClass.filePath = file;
+	JavaClass* jClass = new JavaClass();
+	jClass->init();
+	jClass->filePath = file;
+	jClass->className = GetFileNameWithoutSuffix(file);
 
 	bool isNote = false;
 	bool isPassPackage = false;
@@ -108,7 +152,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	const int cJavaNoteEndFlgLen = JAVA_NOTE_FLG_END.GetLength();	
 	const int cJavaClassFlgLen = JAVA_FILE_CLASS_KEY.GetLength();
 	
-	CString readLine,log,prefix;
+	CString readLine,log,prefix,importClass;
 	
 	int findPos = -1;
 	int startPos = 0;
@@ -190,30 +234,17 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 					readFile.Close();
 					return;
 				}
-				jClass.packageName = readLine.Mid(startPos, findPos - startPos);
-				jClass.className = GetFileNameWithoutSuffix(file);
 
-				mapKey = jClass.packageName + "." + jClass.className;
-				if(0 < mAnalyzeRlt.count(mapKey)){
-					//已经存在这个class
-					log.Format("文件：%s mapKey = %s 已经存在于[file:%s]", file, mapKey, mAnalyzeRlt[mapKey]);
-					pLogUtils->e(log);
-					
-					readFile.Close();
-					return;
-				}
-				else{
-					mAnalyzeRlt.insert(pair<CString, JavaClass>(mapKey, jClass));
-				}
+				jClass->packageName = readLine.Mid(startPos, findPos - startPos);
 				
 				//将类名缓存起来做比对
-				mapKey = jClass.className;
+				mapKey = jClass->className;
 				if(0<mClassCache.count(mapKey)){
 					//已经存在这个class名称的类
-					log.Format("文件：%s className = %s 已经存在于[file:%s]", file, jClass.className, mClassCache[mapKey]);
+					log.Format("文件：%s className = %s 已经存在于[file:%s]", file, jClass->className, mClassCache[mapKey]);
 					pLogUtils->w(log);
 				}else{
-					mClassCache.insert(pair<CString, CString>(mapKey, jClass.filePath));
+					mClassCache.insert(pair<CString, CString>(mapKey, jClass->filePath));
 				}
 			}
 			
@@ -229,17 +260,23 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				startPos = findPos + cJavaClassFlgLen;
 				// Find 类名后面的空格
 				findPos = readLine.Find(SPACE_FLG, startPos);
-				if(findPos < startPos){
-					//如果这里没找到class的后面的结尾符，就直接报错返回
-					log.Format("文件：%s 行：%d 内容：%s 解析类名失败~，请检测语法规则...", file, lineCount, readLine);
-					pLogUtils->e(log);
-
-					readFile.Close();
-					return;
+				if(-1 == findPos){
+					//得到类名
+					jClass->className = readLine.Mid(startPos);
 				}
-				//得到类名
-				jClass.className = readLine.Mid(startPos, findPos - startPos + 1);
-				startPos = findPos + 1;
+				else{
+					if(findPos < startPos){
+						//如果这里没找到class的后面的结尾符，就直接报错返回
+						log.Format("文件：%s 行：%d 内容：%s 解析类名失败~，请检测语法规则...", file, lineCount, readLine);
+						pLogUtils->e(log);
+						
+						readFile.Close();
+						return;
+					}
+					//得到类名
+					jClass->className = readLine.Mid(startPos, findPos - startPos + 1);
+					startPos = findPos + 1;
+				}
 				//尝试查找类的实现开始“{”
 				findPos = readLine.Find(JAVA_CLASS_BODY_BEGIN, startPos);
 				if(findPos < 0){
@@ -252,16 +289,16 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 						findPos = readLine.Find(JAVA_CLASS_BODY_BEGIN, 0);
 						if(-1 <findPos){
 							if(0 < findPos){
-								inheritanceRelationship+= readLine.Mid(0, findPos);
+								inheritanceRelationship+= (SPACE_FLG + readLine.Mid(0, findPos));
 							}
 							break;
 						} else {
-							inheritanceRelationship+= readLine;
+							inheritanceRelationship+= (SPACE_FLG + readLine);
 						}
 					}
-					dillClassInheritanceRelationship(inheritanceRelationship, jClass);
+					dillClassInheritanceRelationship(inheritanceRelationship, *jClass);
 				} else {
-					dillClassInheritanceRelationship(readLine.Mid(startPos, findPos - startPos + 1), jClass);
+					dillClassInheritanceRelationship(readLine.Mid(startPos, findPos - startPos + 1), *jClass);
 				}
 
 				isPassClassName = true;
@@ -281,18 +318,80 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 					readFile.Close();
 					return;
 				}
-				jClass.vReferencedClass.push_back(readLine.Mid(startPos, findPos - startPos + 1));
+
+				importClass = readLine.Mid(startPos, findPos - startPos);
+				jClass->vReferencedClass.push_back(importClass);
 			}
 		}//if(!isPassClassName)
 
 	}//while(readFile.ReadString(readLine))
 	
+	//写在最后
+	mapKey = jClass->packageName + "." + jClass->className;
+	if(!isPassPackage){
+		//没有package？？？？？
+		log.Format("文件：%s 没有发现import...", file);
+		pLogUtils->e(log);
+	}
+	else if(0 < mAnalyzeRlt.count(mapKey)){
+		//已经存在这个class
+		log.Format("文件：%s mapKey = %s 已经存在于[file:%s]", file, mapKey, mAnalyzeRlt[mapKey]);
+		pLogUtils->e(log);
+	}
+	else{
+		mAnalyzeRlt.insert(pair<CString, JavaClass>(mapKey, *jClass));
+	}
+
 	readFile.Close();
 }
 
-//内容：“ extends View implements ViewPager.OnPageChangeListener, OnTabItemCenterPosListener ”
-//“ extends WupBaseResult ”
-//或者是空的
-void JavaFileAnalyzer::dillClassInheritanceRelationship(const CString content, JavaClass& javaClass){
+//	内容：“ extends View implements ViewPager.OnPageChangeListener, OnTabItemCenterPosListener ”
+//	“ extends WupBaseResult ”
+//	或者是空的
+//	const CString JAVA_FILE_EXTENDS_KEY	= "extends ";
+//	const CString JAVA_FILE_IMPLEMENTS_KEY	= "implements ";
+void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaClass& javaClass){
+	content.TrimLeft();
+	content.TrimRight();
 
+	int findPos = -1;
+	int startPos = 0;
+	if(content.IsEmpty()){
+		return;
+	}
+
+	//获取父类Name
+	findPos = content.Find(JAVA_FILE_EXTENDS_KEY, startPos);
+	if(-1 < findPos){
+		startPos = findPos + JAVA_FILE_EXTENDS_KEY.GetLength();
+		findPos = content.Find(SPACE_FLG, startPos);
+		if(findPos < startPos){
+			findPos = content.GetLength();
+		}
+
+		javaClass.parentClassName = content.Mid(startPos, findPos - startPos);
+		startPos = findPos -1;
+	}
+
+	//获取实现的接口
+	findPos = content.Find(JAVA_FILE_IMPLEMENTS_KEY, startPos);
+	if(-1 < findPos){
+		startPos = findPos + JAVA_FILE_IMPLEMENTS_KEY.GetLength();
+		findPos = content.Find(SPACE_FLG, startPos);
+		if(findPos < startPos){
+			findPos = content.GetLength();
+		}
+
+		const int commaLen = COMMA_FLG.GetLength();
+		CString implementsContent = content.Mid(startPos, findPos - startPos);
+		implementsContent.Replace(SPACE_FLG, "");
+		startPos = 0;
+		findPos = implementsContent.Find(COMMA_FLG, startPos);
+		while(-1 < findPos){
+			javaClass.vImplementsInterfaces.push_back(implementsContent.Mid(startPos, findPos - startPos));
+			startPos = findPos + commaLen;
+			findPos = implementsContent.Find(COMMA_FLG, startPos);
+		}
+		javaClass.vImplementsInterfaces.push_back(implementsContent.Mid(startPos));
+	}
 }

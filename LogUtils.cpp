@@ -26,8 +26,11 @@ LogUtils::LogUtils(CString folderName)
 	
 	//获取当前文件夹路径
 	mLogFolder = GetLogDirectory();
+	ensureDir(mLogFolder);
+	
 	if(!folderName.IsEmpty()){
 		mLogFolder += ("\\"+folderName);
+		ensureDir(mLogFolder);
 	}
 
 	d("Log文件：" + mLogFolder + ANALYSIS_RESULT_LOG);
@@ -35,7 +38,24 @@ LogUtils::LogUtils(CString folderName)
 
 LogUtils::~LogUtils()
 {
+	closeOpenLogFile();
+}
+
+void LogUtils::closeOpenLogFile(){
+	if(bLogOpen){
+		mLogFile.Close();
+		bLogOpen = false;
+	}
 	
+	if(bErrorLogOpen){
+		mErrorLogFile.Close();
+		bErrorLogOpen = false;
+	}
+	
+	if(bWarnLogOpen){
+		mWarnLogFile.Close();
+		bWarnLogOpen = false;
+	}
 }
 
 CString LogUtils::GetCurrentTime(){

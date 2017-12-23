@@ -59,3 +59,17 @@ CString GetFileNameWithoutSuffix(const CString file){
 
 	return file.Mid(separatorPos + 1, dotPos - separatorPos -1);
 }
+
+// 判断文件夹是否存在
+bool IsDirExist(const CString & csDir)
+{
+    DWORD dwAttrib = GetFileAttributes(csDir);
+    return INVALID_FILE_ATTRIBUTES != dwAttrib && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+void ensureDir(const CString & csDir){
+	//如果这个文件夹不存在，应该创建的
+	if(!IsDirExist(csDir)){
+		CreateDirectory(csDir, NULL);
+	}
+}
