@@ -26,14 +26,17 @@ private:
 
 private:
 	CStdioFile mLogFile;
+	CStdioFile mLogExFile;
 	CStdioFile mErrorLogFile;
 	CStdioFile mWarnLogFile;
 	BOOL bLogOpen;
+	BOOL bLogExOpen;
 	BOOL bErrorLogOpen;
 	BOOL bWarnLogOpen;
 	
 public:
 	void d(CString log);
+	void i(CString log, bool printTime = true);
 	void e(CString log);
 	void w(CString log);
 

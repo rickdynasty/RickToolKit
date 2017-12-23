@@ -35,7 +35,7 @@ public:
 private:
 	void recycleLogUtils();
 	void dillClassInheritanceRelationship(const CString content, JavaClass& javaClass);
-	void scanReferencedClassVector(const vector<CString> vReferencedClass);
+	void scanReferencedClassVector(JavaClass& javaClass);
 public:
     virtual void analyzerFile(const CString file);
 	

@@ -21,6 +21,8 @@ LogUtils::LogUtils(CString folderName)
 	bLogOpen = false;
 	bErrorLogOpen = false;
 	bWarnLogOpen = false;
+	bLogExOpen = false;
+
 	iErrorCount = 0;
 	iWarnCount = 0;
 	
@@ -45,6 +47,11 @@ void LogUtils::closeOpenLogFile(){
 	if(bLogOpen){
 		mLogFile.Close();
 		bLogOpen = false;
+	}
+
+	if(bLogExOpen){
+		mLogExFile.Close();
+		bLogExOpen = false;
 	}
 	
 	if(bErrorLogOpen){
@@ -71,6 +78,20 @@ void LogUtils::d(CString log){
 
 	if(bLogOpen){
 		mLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+	}
+}
+
+void LogUtils::i(CString log, bool printTime){
+	if(false == bLogExOpen){
+		::DeleteFile(mLogFolder + ANALYSIS_OUT_LOG);
+		bLogExOpen = mLogExFile.Open(mLogFolder + ANALYSIS_OUT_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
+	}
+
+	if(bLogExOpen){
+		if(printTime)
+			mLogExFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		else
+			mLogExFile.WriteString(log + LINE_BREAK);
 	}
 }
 

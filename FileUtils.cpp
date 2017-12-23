@@ -84,6 +84,12 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 		
 		filePath = fileFind.GetFilePath();
 		fileName = fileFind.GetFileName();
+		if("IosConnMgr.java" == fileName || "DevMgr.java" == fileName){
+			int i = 0;
+			i = 1;
+			i = 3;
+		}
+
 		if(fileFind.IsDirectory()){
 			//这里过滤掉 配置&缓存文件夹：.git .gradle 输出等
 			if("build" == fileName || "gradle" == fileName || '.' == fileName.GetAt(0) || "Log" == fileName){

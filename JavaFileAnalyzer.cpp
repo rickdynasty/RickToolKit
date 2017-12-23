@@ -62,37 +62,47 @@ void JavaFileAnalyzer::printResult(){
 	map<CString, JavaClass>::iterator iter;
 	//处理引用计数
 	CString str;
+	JavaClass javaClass;
 	iter = mAnalyzeRlt.begin();
 	while(iter != mAnalyzeRlt.end())
 	{
 		str = iter->first;
-		scanReferencedClassVector(iter->second.vReferencedClass);
+		javaClass = iter->second;
+		scanReferencedClassVector(javaClass);
 		iter++;
 	}
 	
 	//打印结果
+	int count = 0;
 	iter = mAnalyzeRlt.begin();
 	while(iter != mAnalyzeRlt.end())
 	{
-		str.Format("类：%s 被引用了 %d 次", iter->first, iter->second.usedCount);
+		count = iter->second.usedCount;
+		if(0 < count){
+			str = "原来还是可以的";
+		}
+		str.Format("类：%s 被引用了 %d 次", iter->first, count);
 		pLogUtils->d(str);
 		iter++;
 	}
 }
 
-void JavaFileAnalyzer::scanReferencedClassVector(const vector<CString> vReferencedClass){
-	CString str;
-	JavaClass javaClass;
-	const int count = vReferencedClass.size();
+void JavaFileAnalyzer::scanReferencedClassVector(JavaClass& javaClass){
+	CString str = javaClass.packageName + "." + javaClass.className;
+	pLogUtils->i(str, FALSE);
+
+	const int count = javaClass.vReferencedClass.size();
 	for (int i = 0; i < count; i++)
 	{
-		str = vReferencedClass[i];
+		str = javaClass.vReferencedClass[i];
+		pLogUtils->i(LINE_TABLE+LINE_TABLE+str, FALSE);
+
 		int keyCount = mAnalyzeRlt.count(str);
 		if(0 < keyCount){
-			javaClass = mAnalyzeRlt[vReferencedClass[i]];
-			++javaClass.usedCount;
+			mAnalyzeRlt[javaClass.vReferencedClass[i]].usedCount += 1;
 		}
 	}
+	pLogUtils->i(LINE_BREAK, FALSE);
 }
 
 CString JavaFileAnalyzer::getAnalyzerRltDes(){
