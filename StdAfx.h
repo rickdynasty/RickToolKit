@@ -62,10 +62,13 @@ const CString JAVA_NOTE_FLG_END ="*/";
 const CString JAVA_FILE_PACKAGE_KEY = "package ";
 const CString JAVA_FILE_IMPROT_KEY	= "import ";
 const CString JAVA_FILE_CLASS_KEY	= " class ";
+const CString JAVA_FILE_CLASS_KEY_EX	= "class ";
+const CString JAVA_FILE_INTERFACE_KEY	= " interface ";
 const CString JAVA_FILE_EXTENDS_KEY	= "extends ";
 const CString JAVA_FILE_IMPLEMENTS_KEY	= "implements ";
 const CString PACKAGE_or_IMPROT_EDN_FLG = ";";
 const CString SPACE_FLG				= " ";
+const CString TEMPLATE_FLG_BEGIN	= "<";
 const CString COMMA_FLG				= ",";
 const CString JAVA_CLASS_BODY_BEGIN = "{";
 

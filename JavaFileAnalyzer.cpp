@@ -168,6 +168,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	
 	int findPos = -1;
 	int startPos = 0;
+	int comparePos = -1;
 	int lineCount = 0;
 	int strLen = 0;
 	while(readFile.ReadString(readLine)) {
@@ -270,17 +271,53 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		if(!isPassClassName){
 			//查找获取 " class "
 			findPos = readLine.Find(JAVA_FILE_CLASS_KEY, 0);
-			if(-1 < findPos){
+
+			//处理 “class 类名”的情况
+			if(-1 == findPos){
+				if(0 == readLine.Find(JAVA_FILE_CLASS_KEY_EX,0)){
+					findPos = 0;
+					startPos = findPos + JAVA_FILE_CLASS_KEY_EX.GetLength();
+				}else if(-1 == readLine.Find(JAVA_FILE_IMPROT_KEY,0) && -1 < (findPos = readLine.Find(JAVA_FILE_INTERFACE_KEY, 0))){	//处理java中interface文件的情况
+					//没有passClass 却没找到class，也没有import，估计就是interface
+					startPos = findPos + JAVA_FILE_INTERFACE_KEY.GetLength();
+				}
+			}
+			else{
 				startPos = findPos + cJavaClassFlgLen;
+			}
+
+
+			if(-1 < findPos){
+				//if(0 == findPos){
+				//	startPos = findPos + JAVA_FILE_CLASS_KEY_EX.GetLength();
+				//} else {
+				//	startPos = findPos + cJavaClassFlgLen;
+				//}
+
 				// Find 类名后面的空格
 				findPos = readLine.Find(SPACE_FLG, startPos);
+				//有可能是一个模板类
+				comparePos = readLine.Find(TEMPLATE_FLG_BEGIN, startPos);
+				if(-1 < comparePos){
+					if(-1 == findPos){
+						findPos = comparePos;
+					} else if(comparePos < findPos){
+						findPos = comparePos;
+					}
+				}
+
+				//有可能没有父类和接口实现直接接上了"{"
+				if(-1 == findPos && -1 < (comparePos = readLine.Find(JAVA_CLASS_BODY_BEGIN, startPos))){
+					findPos = comparePos;
+				}
+
 				if(-1 == findPos){
 					//得到类名
 					tmp = readLine.Mid(startPos);
 					tmp.TrimLeft();
 					tmp.TrimRight();
 					if(tmp != jClass->className){
-						log.Format("文件：%s 首次出现的类名和文件名%s不一致", file, tmp);
+						log.Format("文件：%s 出现的类名[%s]和文件名不一致", file, tmp);
 						pLogUtils->e(log);
 						continue;
 					}
@@ -300,7 +337,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 					tmp.TrimRight();
 
 					if(tmp != jClass->className){
-						log.Format("文件：%s 首次出现的类名%s和文件名不一致", file, tmp);
+						log.Format("文件：%s 首次出现的类名[%s]和文件名不一致", file, tmp);
 						pLogUtils->e(log);
 						continue;
 					}
