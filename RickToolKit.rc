@@ -84,34 +84,35 @@ BEGIN
     DEFPUSHBUTTON   "确定",IDOK,178,7,50,14,WS_GROUP
 END
 
-IDD_RICKTOOLKIT_DIALOG DIALOGEX 0, 0, 320, 123
+IDD_RICKTOOLKIT_DIALOG DIALOGEX 0, 0, 320, 131
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "RickToolKit"
 FONT 9, "宋体"
 BEGIN
-    EDITTEXT        IDC_EDIT_PATH,109,33,187,16,ES_AUTOHSCROLL | WS_DISABLED
-    PUSHBUTTON      "点击分析冗余类",IDC_BTN_ANALYSIS_LAZY_CLASS,154,62,86,
+    EDITTEXT        IDC_EDIT_PATH,109,37,187,16,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "点击分析冗余类",IDC_BTN_ANALYSIS_LAZY_CLASS,154,66,86,
                     14
-    PUSHBUTTON      "点击分析冗余资源",IDC_BTN_ANALYSIS_LAZY_RES,154,84,86,
+    PUSHBUTTON      "点击分析冗余资源",IDC_BTN_ANALYSIS_LAZY_RES,154,88,86,
                     14
-    LTEXT           "在执行分析前，请将工程备份好！",IDC_STATIC,109,17,121,8
-    PUSHBUTTON      "...",IDC_BTN_CHOOSE_PATH,297,33,15,15
-    LTEXT           "...",IDC_ANALYZER_STATIC_DES,245,65,66,8
-    GROUPBOX        "Action",IDC_STATIC,105,5,212,111
-    GROUPBOX        "Condition",IDC_STATIC,2,5,99,111
+    LTEXT           "在执行分析前，请将工程备份好！",IDC_STATIC,109,21,121,8
+    PUSHBUTTON      "...",IDC_BTN_CHOOSE_PATH,297,37,15,15
+    LTEXT           "...",IDC_ANALYZER_STATIC_DES,245,69,66,8
+    GROUPBOX        "Action",IDC_STATIC,105,9,212,109
+    GROUPBOX        "Condition",IDC_STATIC,2,9,99,109
     CONTROL         "打印时间",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,18,48,10
+                    WS_TABSTOP,13,22,48,10
     CONTROL         "打印文件路径",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,34,64,10
+                    WS_TABSTOP,13,38,64,10
     CONTROL         "直接清理冗余",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,50,64,10
+                    WS_TABSTOP,13,54,64,10
     CONTROL         "输出结果资源xml",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,66,76,10
+                    WS_TABSTOP,13,70,76,10
     CONTROL         "过滤android&java",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,82,76,10
+                    WS_TABSTOP,13,86,76,10
     CONTROL         "显示附属工程",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,98,64,10
+                    WS_TABSTOP,13,102,64,10
+    LTEXT           "ˇ",IDC_EXPAND_DOWNWARD,147,122,9,8
 END
 
 
@@ -179,7 +180,7 @@ BEGIN
         LEFTMARGIN, 2
         RIGHTMARGIN, 317
         TOPMARGIN, 5
-        BOTTOMMARGIN, 116
+        BOTTOMMARGIN, 124
     END
 END
 #endif    // APSTUDIO_INVOKED

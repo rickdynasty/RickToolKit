@@ -85,6 +85,7 @@ ON_WM_QUERYDRAGICON()
 ON_BN_CLICKED(IDC_BTN_ANALYSIS_LAZY_CLASS, OnBtnAnalysisLazyClass)
 ON_BN_CLICKED(IDC_BTN_ANALYSIS_LAZY_RES, OnBtnAnalysisLazyRes)
 	ON_BN_CLICKED(IDC_BTN_CHOOSE_PATH, OnBtnChoosePath)
+	ON_BN_CLICKED(IDC_EXPAND_DOWNWARD, OnExpandDownward)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -179,6 +180,13 @@ void CRickToolKitDlg::OnPaint()
 HCURSOR CRickToolKitDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
+}
+
+//向下扩展对话框
+void CRickToolKitDlg::OnExpandDownward() 
+{
+	// TODO: Add your control notification handler code here
+	// Write Code Here
 }
 
 void CRickToolKitDlg::OnBtnChoosePath() 

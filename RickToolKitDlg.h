@@ -50,6 +50,7 @@ protected:
 	afx_msg void OnBtnAnalysisLazyClass();
 	afx_msg void OnBtnAnalysisLazyRes();
 	afx_msg void OnBtnChoosePath();
+	afx_msg void OnExpandDownward();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
