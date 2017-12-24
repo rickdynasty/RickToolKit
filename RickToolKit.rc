@@ -104,12 +104,12 @@ BEGIN
                     WS_TABSTOP,13,18,48,10
     CONTROL         "打印文件路径",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,34,64,10
-    CONTROL         "过滤 android.",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,50,68,10
-    CONTROL         "过滤 java.",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,66,56,10
-    CONTROL         "分析android.R",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,82,68,10
+    CONTROL         "直接清理冗余",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,50,64,10
+    CONTROL         "输出结果资源xml",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,66,76,10
+    CONTROL         "过来android&java",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,82,76,10
     CONTROL         "显示附属工程",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,98,64,10
 END
