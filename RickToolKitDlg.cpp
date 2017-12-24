@@ -84,7 +84,8 @@ ON_WM_PAINT()
 ON_WM_QUERYDRAGICON()
 ON_BN_CLICKED(IDC_BTN_ANALYSIS_LAZY_CLASS, OnBtnAnalysisLazyClass)
 ON_BN_CLICKED(IDC_BTN_ANALYSIS_LAZY_RES, OnBtnAnalysisLazyRes)
-//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_BTN_CHOOSE_PATH, OnBtnChoosePath)
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +94,7 @@ END_MESSAGE_MAP()
 BOOL CRickToolKitDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	
+	this->SetWindowText("工具箱");
 	// Add "About..." menu item to system menu.
 	
 	// IDM_ABOUTBOX must be in the system command range.
@@ -120,8 +121,13 @@ BOOL CRickToolKitDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	pFileUtils = new FileUtils();
 
-	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
-	pEdit->SetWindowText("点击下面的功能按钮，选择要分析的Project路径...");
+	mAnalyzeDefaultDes = "←点击开始分析";
+	mAnalyzeingDes = "分析中...";
+
+	pTargetAnalyzePathEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
+	pTargetAnalyzePathEdit->SetWindowText("点击右侧的按钮，选择要分析的Project路径...");
+	pAnalyzeStatic = (CEdit*)GetDlgItem(IDC_ANALYZER_STATIC_DES);
+	pAnalyzeStatic->SetWindowText(mAnalyzeDefaultDes);
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -175,20 +181,25 @@ HCURSOR CRickToolKitDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
+void CRickToolKitDlg::OnBtnChoosePath() 
+{
+	choosePath();
+}
+
 //开始分析冗余类
 void CRickToolKitDlg::OnBtnAnalysisLazyClass() 
 {
-	//if(!IsDirExist(mPath)){
-	//MessageBox("请先选择有效的工程文件夹进行分析");
-	choosePath();
-	//return;
-	//}
-	
 	if(NULL == pFileUtils){
 		pFileUtils = new FileUtils();
 	}
+	
+	if(NULL == pAnalyzeStatic){
+		pAnalyzeStatic = (CEdit*)GetDlgItem(IDC_ANALYZER_STATIC_DES);
+	}
+	pAnalyzeStatic->SetWindowText(mAnalyzeingDes);
 
 	MessageBox(pFileUtils->analysisLazyClass(mPath));
+	pAnalyzeStatic->SetWindowText(mAnalyzeDefaultDes);
 }
 
 void CRickToolKitDlg::OnBtnAnalysisLazyRes() 
@@ -222,8 +233,12 @@ void CRickToolKitDlg::choosePath(){
 		
 		//设置为当前路径
         SetCurrentDirectory ( path );
-		CEdit* pEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
-		pEdit->SetWindowText(mPath);
+		
+		if(NULL == pTargetAnalyzePathEdit){
+			pTargetAnalyzePathEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
+		}
+
+		pTargetAnalyzePathEdit->SetWindowText(mPath);
 		
         // 释放内存
         IMalloc * imalloc = 0;

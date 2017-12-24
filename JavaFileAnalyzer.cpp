@@ -79,10 +79,13 @@ void JavaFileAnalyzer::printResult(){
 	{
 		count = iter->second.usedCount;
 		if(0 < count){
-			str = "原来还是可以的";
+			str.Format("类：%s 被引用了 %d 次", iter->first, count);
+			pLogUtils->d(str);
+		} else {
+			str.Format("类：%s 被引用了 %d 次 file:%s", iter->first, count, iter->second.filePath);
+			pLogUtils->e(str);
 		}
-		str.Format("类：%s 被引用了 %d 次", iter->first, count);
-		pLogUtils->d(str);
+
 		iter++;
 	}
 }

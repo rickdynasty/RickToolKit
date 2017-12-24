@@ -54,6 +54,10 @@ void FileUtils::createFileAnalyzer(const CString suffixFlg){
 
 CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProjectPath)
 {
+	if(projectPath.IsEmpty()){
+		return "空文件路径，o(╯□╰)o请先选择有效的工程目录...";
+	}
+	
 	createFileAnalyzer(SUFFIX_JAVA);
 	pFileAnalyzer->clear();
 

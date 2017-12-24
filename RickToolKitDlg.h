@@ -39,6 +39,7 @@ private:
 protected:
 	HICON m_hIcon;
 	CString mPath;
+	CString mTargetName;
 
 	// Generated message map functions
 	//{{AFX_MSG(CRickToolKitDlg)
@@ -48,11 +49,23 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBtnAnalysisLazyClass();
 	afx_msg void OnBtnAnalysisLazyRes();
+	afx_msg void OnBtnChoosePath();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 private:
 	FileUtils* pFileUtils;
+	CEdit* pTargetAnalyzePathEdit;
+	CEdit* pAnalyzeStatic;
+
+	CString mAnalyzeDefaultDes;
+	CString mAnalyzeingDes;
+
+	//Condition
+	/*
+	((CButton*)GetDlgItem(IDC_CHECK))->SetCheck(TRUE)  选中
+	((CButton*)GetDlgItem(IDC_CHECK))->SetCheck(FALSE)  取消选中
+	*/
 };
 
 //{{AFX_INSERT_LOCATION}}
