@@ -108,7 +108,7 @@ BEGIN
                     WS_TABSTOP,13,50,64,10
     CONTROL         "输出结果资源xml",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,66,76,10
-    CONTROL         "过来android&java",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "过滤android&java",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,82,76,10
     CONTROL         "显示附属工程",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,98,64,10
