@@ -27,18 +27,21 @@ private:
 private:
 	CStdioFile mLogFile;
 	CStdioFile mLogExFile;
+	CStdioFile mLogProbFile;
 	CStdioFile mErrorLogFile;
 	CStdioFile mWarnLogFile;
 	BOOL bLogOpen;
 	BOOL bLogExOpen;
+	BOOL bLogProbOpen;
 	BOOL bErrorLogOpen;
 	BOOL bWarnLogOpen;
 	
 public:
-	void d(CString log);
-	void i(CString log, bool printTime = true);
-	void e(CString log);
-	void w(CString log);
+	void d(CString log, bool printTime = false);
+	void i(CString log, bool printTime = false);
+	void p(CString log, bool printTime = false);
+	void e(CString log, bool printTime = false);
+	void w(CString log, bool printTime = false);
 
 	int getErrorCount();
 	int getWarnCount();

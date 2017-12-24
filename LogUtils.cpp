@@ -20,6 +20,7 @@ LogUtils::LogUtils(CString folderName)
 {
 	bLogOpen = false;
 	bErrorLogOpen = false;
+	bLogProbOpen = false;
 	bWarnLogOpen = false;
 	bLogExOpen = false;
 
@@ -53,6 +54,11 @@ void LogUtils::closeOpenLogFile(){
 		mLogExFile.Close();
 		bLogExOpen = false;
 	}
+
+	if(bLogProbOpen){
+		mLogProbFile.Close();
+		bLogProbOpen = false;
+	}
 	
 	if(bErrorLogOpen){
 		mErrorLogFile.Close();
@@ -70,14 +76,18 @@ CString LogUtils::GetCurrentTime(){
 }
 
 //Log
-void LogUtils::d(CString log){
+void LogUtils::d(CString log, bool printTime){
 	if(false == bLogOpen){
 		::DeleteFile(mLogFolder + ANALYSIS_RESULT_LOG);
 		bLogOpen = mLogFile.Open(mLogFolder + ANALYSIS_RESULT_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
 	}
 
 	if(bLogOpen){
-		mLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		if(printTime){
+			mLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		} else {
+			mLogFile.WriteString(log + LINE_BREAK);
+		}
 	}
 }
 
@@ -88,33 +98,59 @@ void LogUtils::i(CString log, bool printTime){
 	}
 
 	if(bLogExOpen){
-		if(printTime)
+		if(printTime){
 			mLogExFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
-		else
+		} else {
 			mLogExFile.WriteString(log + LINE_BREAK);
+		}
 	}
 }
 
-void LogUtils::e(CString log){
+void LogUtils::p(CString log, bool printTime){
+	if(false == bLogProbOpen){
+		::DeleteFile(mLogFolder + ANALYSIS_PROB_LOG);
+		bLogProbOpen = mLogProbFile.Open(mLogFolder + ANALYSIS_PROB_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
+	}
+
+	if(bLogProbOpen){
+		if(printTime){
+			mLogProbFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		} else {
+			mLogProbFile.WriteString(log + LINE_BREAK);
+		}
+	}
+}
+
+void LogUtils::e(CString log, bool printTime){
 	if(false == bErrorLogOpen){
 		::DeleteFile(mLogFolder + ANALYSIS_ERROR_LOG);
 		bErrorLogOpen = mErrorLogFile.Open(mLogFolder + ANALYSIS_ERROR_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
 	}
 	
 	if(bErrorLogOpen){
-		mErrorLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		if(printTime){
+			mErrorLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		} else {
+			mErrorLogFile.WriteString(log + LINE_BREAK);
+		}
+
 		++iErrorCount;
 	}
 }
 
-void LogUtils::w(CString log){
+void LogUtils::w(CString log, bool printTime){
 	if(false == bWarnLogOpen){
 		::DeleteFile(mLogFolder + ANALYSIS_WARN_LOG);
 		bWarnLogOpen = mWarnLogFile.Open(mLogFolder + ANALYSIS_WARN_LOG, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary);
 	}
 
 	if(bWarnLogOpen){
-		mWarnLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		if(printTime){
+			mWarnLogFile.WriteString(GetCurrentTime()+" "+log + LINE_BREAK);
+		} else {
+			mWarnLogFile.WriteString(log + LINE_BREAK);
+		}
+
 		++iWarnCount;
 	}
 }

@@ -80,6 +80,7 @@ const CString KEYWORD_CLASS			= "class";
 const CString ANALYSIS_RLT_LOG_POS_PREFIX = "\\Log";
 const CString ANALYSIS_RESULT_LOG = "\\log.txt";
 const CString ANALYSIS_OUT_LOG = "\\log_ex.txt";
+const CString ANALYSIS_PROB_LOG = "\\log_problematic.txt";
 const CString ANALYSIS_ERROR_LOG = "\\log_error.txt";
 const CString ANALYSIS_WARN_LOG = "\\log_warn.txt";
 

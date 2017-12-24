@@ -150,7 +150,9 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	JavaClass* jClass = new JavaClass();
 	jClass->init();
 	jClass->filePath = file;
-	jClass->className = GetFileNameWithoutSuffix(file);
+	jClass->className = GetFileNameWithoutSuffix(file);	
+	jClass->className.TrimLeft();
+	jClass->className.TrimRight();
 
 	bool isNote = false;
 	bool isPassPackage = false;
@@ -162,7 +164,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	const int cJavaNoteEndFlgLen = JAVA_NOTE_FLG_END.GetLength();	
 	const int cJavaClassFlgLen = JAVA_FILE_CLASS_KEY.GetLength();
 	
-	CString readLine,log,prefix,importClass;
+	CString readLine,log,prefix,importClass,tmp;
 	
 	int findPos = -1;
 	int startPos = 0;
@@ -246,14 +248,16 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				}
 
 				jClass->packageName = readLine.Mid(startPos, findPos - startPos);
-				
+				jClass->packageName.TrimLeft();
+				jClass->packageName.TrimRight();
+
 				//将类名缓存起来做比对
 				mapKey = jClass->className;
-				if(0<mClassCache.count(mapKey)){
+				if(0 < mClassCache.count(mapKey)){
 					//已经存在这个class名称的类
-					log.Format("文件：%s className = %s 已经存在于[file:%s]", file, jClass->className, mClassCache[mapKey]);
-					pLogUtils->w(log);
-				}else{
+					log.Format("类：%s 在文件：\t%s \t已经存在于[file:\n\t\t\t\t\t\t%s]", mapKey, file, mClassCache[mapKey]);
+					pLogUtils->p(log);
+				} else {
 					mClassCache.insert(pair<CString, CString>(mapKey, jClass->filePath));
 				}
 			}
@@ -272,7 +276,14 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				findPos = readLine.Find(SPACE_FLG, startPos);
 				if(-1 == findPos){
 					//得到类名
-					jClass->className = readLine.Mid(startPos);
+					tmp = readLine.Mid(startPos);
+					tmp.TrimLeft();
+					tmp.TrimRight();
+					if(tmp != jClass->className){
+						log.Format("文件：%s 首次出现的类名和文件名%s不一致", file, tmp);
+						pLogUtils->e(log);
+						continue;
+					}
 				}
 				else{
 					if(findPos < startPos){
@@ -284,7 +295,15 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 						return;
 					}
 					//得到类名
-					jClass->className = readLine.Mid(startPos, findPos - startPos + 1);
+					tmp = readLine.Mid(startPos, findPos - startPos);
+					tmp.TrimLeft();
+					tmp.TrimRight();
+
+					if(tmp != jClass->className){
+						log.Format("文件：%s 首次出现的类名%s和文件名不一致", file, tmp);
+						pLogUtils->e(log);
+						continue;
+					}
 					startPos = findPos + 1;
 				}
 				//尝试查找类的实现开始“{”
@@ -335,23 +354,17 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		}//if(!isPassClassName)
 
 	}//while(readFile.ReadString(readLine))
-	
-	//写在最后
+
+	//写到最后
 	mapKey = jClass->packageName + "." + jClass->className;
-	if(!isPassPackage){
-		//没有package？？？？？
-		log.Format("文件：%s 没有发现import...", file);
-		pLogUtils->e(log);
-	}
-	else if(0 < mAnalyzeRlt.count(mapKey)){
+	if(0 < mAnalyzeRlt.count(mapKey)){
 		//已经存在这个class
-		log.Format("文件：%s mapKey = %s 已经存在于[file:%s]", file, mapKey, mAnalyzeRlt[mapKey]);
+		log.Format("类文件：%s mapKey = %s 已经存在于[file:%s]", file, mapKey, mAnalyzeRlt[mapKey].filePath);
 		pLogUtils->e(log);
-	}
-	else{
+	} else {
 		mAnalyzeRlt.insert(pair<CString, JavaClass>(mapKey, *jClass));
 	}
-
+				
 	readFile.Close();
 }
 
