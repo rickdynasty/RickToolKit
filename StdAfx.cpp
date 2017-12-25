@@ -60,6 +60,15 @@ CString GetFileNameWithoutSuffix(const CString file){
 	return file.Mid(separatorPos + 1, dotPos - separatorPos -1);
 }
 
+CString GetFileNameWithoutSuffixEx(const CString fileName){
+	int dotPos = fileName.ReverseFind('.');
+	if(dotPos < 0){
+		dotPos = fileName.GetLength();
+	}
+
+	return fileName.Left(dotPos);
+}
+
 // 判断文件夹是否存在
 bool IsDirExist(const CString & csDir)
 {

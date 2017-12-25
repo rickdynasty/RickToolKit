@@ -55,6 +55,10 @@ typedef struct{
 	vector<CString> vReferencedClass;
 }AMF_STRUCT;
 
+typedef struct{
+	vector<CString> values;
+}VECTOR;
+
 #define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 #define FILE_ATTRIBUTE_DIRECTORY            0x00000010
 
@@ -130,6 +134,7 @@ CString GetLogDirectory();
 CString GetFileSuffix(const CString fileName);
 CString GetFileName(const CString file);
 CString GetFileNameWithoutSuffix(const CString file);
+CString GetFileNameWithoutSuffixEx(const CString fileName);
 bool IsDirExist(const CString & csDir);
 void ensureDir(const CString & csDir);
 

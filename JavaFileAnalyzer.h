@@ -27,6 +27,7 @@ public:
 	virtual void printResult();	//´òÓ¡½á¹û
 	virtual CString getAnalyzerRltDes();
 	virtual void closeOpenFile();
+	void getProDirStructure(CString folder);
 
 private:
 	void recycleLogUtils();
@@ -41,6 +42,7 @@ public:
 private:
 	map<CString, JavaClass> mAnalyzeRlt;
 	map<CString, CString> mClassCache;
+	map<CString, VECTOR> mProStructure;
 	bool mForRes;
 	CString mRltDes;
 	AMF_STRUCT *pAMFData;

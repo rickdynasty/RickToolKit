@@ -44,6 +44,7 @@ void JavaFileAnalyzer::setSuffix(CString suffix){
 void JavaFileAnalyzer::clear(){
 	mAnalyzeRlt.clear();
 	mClassCache.clear();
+	mProStructure.clear();
 	mRltDes = ANALYSIS_RESULT_DEFAULT_DES;
 	mForRes = false;
 	pAMFData = NULL;
@@ -54,12 +55,30 @@ void JavaFileAnalyzer::closeOpenFile(){
 }
 
 void JavaFileAnalyzer::printResult(){
+	//map<CString, VECTOR> mProStructure;
+	CString str;
+	VECTOR vec;
+	map<CString, VECTOR>::iterator it;
+	if(0 < mProStructure.size()){
+		it = mProStructure.begin();
+		while(it != mProStructure.end())
+		{
+			str = it->first;
+			vec = it->second;
+			pLogUtils->d("目录："+str);
+			for(int index=0; index < vec.values.size();index++){
+				pLogUtils->d(LINE_TABLE+LINE_TABLE+"文件："+vec.values[index]);
+			}
+			it++;
+		}
+	}
+
+
 	if(mAnalyzeRlt.size() < 1)
 		return;
 
 	map<CString, JavaClass>::iterator iter;
 	//处理引用计数
-	CString str;
 	JavaClass javaClass;
 	iter = mAnalyzeRlt.begin();
 	while(iter != mAnalyzeRlt.end())
@@ -130,6 +149,47 @@ CString JavaFileAnalyzer::getAnalyzerRltDes(){
 	}
 
 	return mRltDes;
+}
+
+void JavaFileAnalyzer::getProDirStructure(CString folder){
+	CString fileName,filePath;
+	CFileFind fileFind;
+	BOOL hasFind = fileFind.FindFile(folder+"\\*.*");
+
+	VECTOR vContent;
+	vContent.values.clear();
+	const CString key = folder;
+	while(hasFind)  
+	{
+		hasFind = fileFind.FindNextFile();  
+		if(fileFind.IsDots())
+			continue;
+		
+		filePath = fileFind.GetFilePath();
+		fileName = fileFind.GetFileName();
+
+		if(fileFind.IsDirectory()){
+			//这里过滤掉 配置&缓存文件夹：.git .gradle 输出等
+			if("build" == fileName || "gradle" == fileName || '.' == fileName.GetAt(0) || "Log" == fileName || "assets" == fileName || "libs" == fileName || "res" == fileName){
+				continue;
+			}
+			
+			getProDirStructure(filePath);
+			continue;
+		}
+		
+		if(mSuffix == GetFileSuffix(fileName)){
+			//扫描到了目标文件
+			fileName = GetFileNameWithoutSuffixEx(fileName);
+			vContent.values.push_back(fileName);
+		}
+	}
+	
+	if(0 < vContent.values.size()){
+		mProStructure.insert(pair<CString, VECTOR>(key, vContent));
+	}
+
+	fileFind.Close();
 }
 
 void JavaFileAnalyzer::analyzerFile(const CString file){

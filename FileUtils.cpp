@@ -69,6 +69,8 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 	pFileAnalyzer->clear();
 	pSpecialFileAnalyzer->clear();
 
+	((JavaFileAnalyzer*)pFileAnalyzer)->getProDirStructure(projectPath);
+
 	scanFolderForSuffix(projectPath, SUFFIX_JAVA);
 	if(!additionalProjectPath.IsEmpty()){
 		scanFolderForSuffix(additionalProjectPath, SUFFIX_JAVA);
