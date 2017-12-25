@@ -600,6 +600,12 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		log.Format("类文件：%s mapKey = %s 已经存在于[file:%s]", file, mapKey, mAnalyzeRlt[mapKey].filePath);
 		pLogUtils->e(log);
 	} else {
+		//将内部引用添加到import里面用作计算引用计数的
+		for(int index=0; index < jClass->vReferencedClassEx.size(); index++){
+			importClass = jClass->packageName+"."+jClass->vReferencedClassEx[index];
+			jClass->vReferencedClass.push_back(importClass);
+		}
+
 		mAnalyzeRlt.insert(pair<CString, JavaClass>(mapKey, *jClass));
 	}
 				
