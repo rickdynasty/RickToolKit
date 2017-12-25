@@ -10,6 +10,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#pragma warning(disable : 4786)
+#pragma warning(disable : 4652)
+
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
@@ -52,6 +55,7 @@ const CString SUFFIX_PNG	="png";
 const CString SUFFIX_XML	="xml";
 const CString SUFFIX_JAVA	= "java";
 const CString SUFFIX_CONFIG	="config";
+const CString FILE_ANDROID_MANIFEST	= "AndroidManifest.xml";
 
 //javaÀàµÄ×¢ÊÍ
 const CString JAVA_NOTE_ONELINE_FLG ="//";

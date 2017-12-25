@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 #include "FileAnalyzer.h"
+#include "LogUtils.h"
 
 class FileUtils  
 {
@@ -25,7 +26,9 @@ public:
 	CString analysisLazyClass(CString projectPath, CString additionalProjectPath="");
 
 private:
+	LogUtils* pLogUtils;
 	FileAnalyzer* pFileAnalyzer;
+	FileAnalyzer* pSpecialFileAnalyzer;
 };
 
 #endif // !defined(AFX_FILEUTILS_H__3E84A386_804E_4423_A9A0_C5064ED6AC17__INCLUDED_)

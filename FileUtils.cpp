@@ -6,6 +6,7 @@
 #include "RickToolKit.h"
 #include "FileUtils.h"
 #include "JavaFileAnalyzer.h"
+#include "AndroidManifestAnalyzer.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -20,6 +21,7 @@ static char THIS_FILE[]=__FILE__;
 FileUtils::FileUtils()
 {
 	pFileAnalyzer = NULL;
+	pLogUtils = new LogUtils();
 }
 
 FileUtils::~FileUtils()
@@ -45,6 +47,11 @@ void FileUtils::createFileAnalyzer(const CString suffixFlg){
 	if(suffixFlg == SUFFIX_JAVA){
 		pFileAnalyzer = new JavaFileAnalyzer();
 		pFileAnalyzer->setSuffix(SUFFIX_JAVA);
+		pFileAnalyzer->setLogUtils(pLogUtils);
+
+		pSpecialFileAnalyzer = new AndroidManifestAnalyzer();
+		pSpecialFileAnalyzer->setSuffix(SUFFIX_XML);
+		pSpecialFileAnalyzer->setLogUtils(pLogUtils);
 	}else if(suffixFlg == SUFFIX_XML){	//xml的解析器，write later
 		recycleFileAnalyzer();
 	} else{								//其他类型的暂时没处理
@@ -69,8 +76,9 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 	pFileAnalyzer->printResult();
 
 	CString analyzerRlt = pFileAnalyzer->getAnalyzerRltDes();
-	//最后关闭打开的文件
-	pFileAnalyzer->closeOpenFile();
+	
+	//结束的时候是否持有的Log文件句柄
+	pLogUtils->closeOpenLogFile();
 
 	return analyzerRlt;
 }
@@ -88,11 +96,6 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 		
 		filePath = fileFind.GetFilePath();
 		fileName = fileFind.GetFileName();
-		if("IosConnMgr.java" == fileName || "DevMgr.java" == fileName){
-			int i = 0;
-			i = 1;
-			i = 3;
-		}
 
 		if(fileFind.IsDirectory()){
 			//这里过滤掉 配置&缓存文件夹：.git .gradle 输出等
@@ -108,7 +111,9 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 			//扫描到了目标文件
 			//Write code here^
 			pFileAnalyzer->analyzerFile(filePath);
-		}else{
+		}else if(FILE_ANDROID_MANIFEST == fileName){
+			pSpecialFileAnalyzer->analyzerFile(filePath);
+		} else {
 			continue;//不是目标文件，直接略过...
 		}
 	}

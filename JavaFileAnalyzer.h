@@ -9,13 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4652)
-
 #include <iostream>
 #include <map>
 #include "FileAnalyzer.h"
-#include "LogUtils.h"
 
 using namespace std;
 
@@ -34,13 +30,12 @@ public:
 
 private:
 	void recycleLogUtils();
-	void dillClassInheritanceRelationship(const CString content, JavaClass& javaClass);
+	void dillClassInheritanceRelationship(CString content, JavaClass& javaClass);
 	void scanReferencedClassVector(JavaClass& javaClass);
 public:
     virtual void analyzerFile(const CString file);
 	
 private:
-	LogUtils* pLogUtils;
 	map<CString, JavaClass> mAnalyzeRlt;
 	map<CString, CString> mClassCache;
 	bool mForRes;

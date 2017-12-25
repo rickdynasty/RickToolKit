@@ -19,7 +19,6 @@ static char THIS_FILE[]=__FILE__;
 JavaFileAnalyzer::JavaFileAnalyzer()
 {
 	mAnalyzeRlt.clear();
-	pLogUtils = new LogUtils();
 	mForRes = false;
 }
 
@@ -51,8 +50,7 @@ void JavaFileAnalyzer::clear(){
 }
 
 void JavaFileAnalyzer::closeOpenFile(){
-	//结束的时候是否持有的Log文件句柄
-	pLogUtils->closeOpenLogFile();
+
 }
 
 void JavaFileAnalyzer::printResult(){
