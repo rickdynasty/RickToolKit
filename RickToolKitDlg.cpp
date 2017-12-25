@@ -122,11 +122,18 @@ BOOL CRickToolKitDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	pFileUtils = new FileUtils();
 
+	mPath = "D:\\_Anima\\pacewear_app_reconstruction";
+
 	mAnalyzeDefaultDes = "←点击开始分析";
 	mAnalyzeingDes = "分析中...";
 
 	pTargetAnalyzePathEdit = (CEdit*)GetDlgItem(IDC_EDIT_PATH);
-	pTargetAnalyzePathEdit->SetWindowText("点击右侧的按钮，选择要分析的Project路径...");
+	if(mPath.IsEmpty()){
+		pTargetAnalyzePathEdit->SetWindowText("点击右侧的按钮，选择要分析的Project路径...");
+	}else{
+		pTargetAnalyzePathEdit->SetWindowText(mPath);
+	}
+
 	pAnalyzeStatic = (CEdit*)GetDlgItem(IDC_ANALYZER_STATIC_DES);
 	pAnalyzeStatic->SetWindowText(mAnalyzeDefaultDes);
 	

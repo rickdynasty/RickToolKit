@@ -388,11 +388,18 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 
 				importClass = readLine.Mid(startPos, findPos - startPos);
 				jClass->vReferencedClass.push_back(importClass);
+				
+				//没有找到类名 就不往后继续，直接读取下一行
+				continue;
 			}
 		}//if(!isPassClassName)
 
 		//收集类实现中的引用
-
+		{
+			//需要做一些处理，至少要传递一个整句给collectReferencedClass
+			//判断是否是func的方法：存在关键字“private static int ”
+			//collectReferencedClass(readLine, *jClass);
+		}
 
 	}//while(readFile.ReadString(readLine))
 
@@ -473,4 +480,15 @@ void JavaFileAnalyzer::receiveAMFData(vector<AMF_STRUCT> amfDate){
 			}
 		}
 	}
+}
+
+/**
+ * 这里的规则比较简单 - 分析下面几类内容：
+	1、方法里面的参数类型
+	2、语句第一个词{不是关键字，且首字符是大写的} 【“;”语句结束符后的也算】
+ */
+//
+void JavaFileAnalyzer::collectReferencedClass(CString content, JavaClass& javaClass){
+	content.TrimLeft();
+	content.TrimRight();
 }

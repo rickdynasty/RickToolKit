@@ -32,6 +32,8 @@ private:
 	void recycleLogUtils();
 	void dillClassInheritanceRelationship(CString content, JavaClass& javaClass);
 	void scanReferencedClassVector(JavaClass& javaClass);
+	void collectReferencedClass(CString content, JavaClass& javaClass);
+
 public:
     virtual void analyzerFile(const CString file);
 	void receiveAMFData(vector<AMF_STRUCT> amfDate);
@@ -42,6 +44,8 @@ private:
 	bool mForRes;
 	CString mRltDes;
 	AMF_STRUCT *pAMFData;
+
+
 };
 
 #endif // !defined(AFX_JAVAFILEANALYZER_H__83F03EF7_0CC8_41F8_84E6_EAFD925AC683__INCLUDED_)

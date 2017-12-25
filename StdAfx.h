@@ -25,6 +25,8 @@
 
 using namespace std;
 
+const string JavaContentKey[]={"private","if","return","Object","ClassLoader","Map","static","while", "Boolean"};
+const string JavaNewKey = "new";
 typedef struct{
 	void init(){
 		usedCount = 0;
