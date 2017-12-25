@@ -25,7 +25,6 @@
 
 using namespace std;
 
-const string JavaContentKey[]={"private","if","return","Object","ClassLoader","Map","static","while", "Boolean"};
 const string JavaNewKey = "new";
 typedef struct{
 	void init(){
@@ -135,6 +134,10 @@ CString GetFileSuffix(const CString fileName);
 CString GetFileName(const CString file);
 CString GetFileNameWithoutSuffix(const CString file);
 CString GetFileNameWithoutSuffixEx(const CString fileName);
+CString GetFileDir(const CString file);
+
+CString GetClassName(const CString importContent);
+
 bool IsDirExist(const CString & csDir);
 void ensureDir(const CString & csDir);
 

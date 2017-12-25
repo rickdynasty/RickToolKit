@@ -42,6 +42,20 @@ CString GetFileName(const CString file){
 	return file.Right(file.GetLength() - separatorPos - 1);
 }
 
+CString GetClassName(const CString importContent){
+	int dotPos = importContent.ReverseFind('.');
+	return importContent.Right(importContent.GetLength() - dotPos - 1);
+}
+
+CString GetFileDir(const CString file){
+	int separatorPos = file.ReverseFind('\\');
+	if(-1 == separatorPos){
+		separatorPos = file.ReverseFind('/');
+	}
+
+	return file.Left(separatorPos);
+}
+
 CString GetFileNameWithoutSuffix(const CString file){
 	int separatorPos = file.ReverseFind('\\');
 	if(-1 == separatorPos){

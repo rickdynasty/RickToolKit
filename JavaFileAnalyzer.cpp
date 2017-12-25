@@ -19,6 +19,7 @@ static char THIS_FILE[]=__FILE__;
 JavaFileAnalyzer::JavaFileAnalyzer()
 {
 	clear();
+	vJavaKeys.push_back("void");
 }
 
 JavaFileAnalyzer::~JavaFileAnalyzer()
@@ -45,6 +46,7 @@ void JavaFileAnalyzer::clear(){
 	mAnalyzeRlt.clear();
 	mClassCache.clear();
 	mProStructure.clear();
+	vJavaKeys.clear();
 	mRltDes = ANALYSIS_RESULT_DEFAULT_DES;
 	mForRes = false;
 	pAMFData = NULL;
@@ -226,6 +228,20 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	const int cJavaClassFlgLen = JAVA_FILE_CLASS_KEY.GetLength();
 	
 	CString readLine,log,prefix,importClass,tmp;
+
+	//提前加入同级目录下面的其他类
+	vector<CString> mayRefClase;
+	mayRefClase.clear();
+	CString dir = GetFileDir(file);
+	if(0 < mProStructure.count(dir)){
+		VECTOR sameDirClasses = mProStructure[dir];
+		for(int index = 0; index < sameDirClasses.values.size();index++){
+			tmp = sameDirClasses.values[index];
+			if(tmp != jClass->className){
+				mayRefClase.push_back(sameDirClasses.values[index]);
+			}
+		}
+	}
 	
 	int findPos = -1;
 	int startPos = 0;
@@ -448,6 +464,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 
 				importClass = readLine.Mid(startPos, findPos - startPos);
 				jClass->vReferencedClass.push_back(importClass);
+				mayRefClase.push_back(GetClassName(importClass));
 				
 				//没有找到类名 就不往后继续，直接读取下一行
 				continue;
@@ -458,7 +475,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		{
 			//需要做一些处理，至少要传递一个整句给collectReferencedClass
 			//判断是否是func的方法：存在关键字“private static int ”
-			//collectReferencedClass(readLine, *jClass);
+			collectReferencedClass(readLine, *jClass);
 		}
 
 	}//while(readFile.ReadString(readLine))
@@ -548,7 +565,45 @@ void JavaFileAnalyzer::receiveAMFData(vector<AMF_STRUCT> amfDate){
 	2、语句第一个词{不是关键字，且首字符是大写的} 【“;”语句结束符后的也算】
  */
 //
-void JavaFileAnalyzer::collectReferencedClass(CString content, JavaClass& javaClass){
-	content.TrimLeft();
-	content.TrimRight();
+void JavaFileAnalyzer::collectReferencedClass(const CString content, JavaClass& javaClass){
+	char ch;
+	int startPos = 0;
+	int findPos = -1;
+	bool isStrStart = false;
+	CString mayKey;
+	bool discarded = false;
+	for(int index=0; index < content.GetLength(); index++){
+		ch  = content.GetAt(index);
+
+		if(startPos == index){
+			if('A' <= ch && ch <= 'Z'){
+				//对类的命名 基本都是大写开始的
+				discarded = false;
+			}else{
+				discarded = true;
+			}
+		}
+
+		if(isStrStart){
+			if('"' == ch){
+				isStrStart = false;
+			} else{
+				continue;
+			}
+		}
+
+		if('"' == ch){
+			isStrStart = true;
+			continue;
+		}
+
+		if(' ' == ch || '(' == ch || ')' == ch || '{' == ch || '}' == ch || '.' == ch || '=' == ch || ';' == ch || ',' == ch || '&' == ch || '|' == ch || '<' == ch || '>' == ch){
+			findPos = index;
+			if(!discarded){
+				mayKey = content.Mid(startPos, findPos - startPos);
+				javaClass.vReferencedClassEx.push_back(mayKey);
+			}
+			startPos = findPos + 1;
+		}
+	}
 }
