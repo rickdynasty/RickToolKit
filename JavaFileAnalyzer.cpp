@@ -19,7 +19,6 @@ static char THIS_FILE[]=__FILE__;
 JavaFileAnalyzer::JavaFileAnalyzer()
 {
 	clear();
-	vJavaKeys.push_back("void");
 }
 
 JavaFileAnalyzer::~JavaFileAnalyzer()
@@ -113,7 +112,7 @@ void JavaFileAnalyzer::scanReferencedClassVector(JavaClass& javaClass){
 	CString str = javaClass.packageName + "." + javaClass.className;
 	pLogUtils->i(str);
 
-	const int count = javaClass.vReferencedClass.size();
+	int count = javaClass.vReferencedClass.size();
 	for (int i = 0; i < count; i++)
 	{
 		str = javaClass.vReferencedClass[i];
@@ -123,6 +122,13 @@ void JavaFileAnalyzer::scanReferencedClassVector(JavaClass& javaClass){
 		if(0 < keyCount){
 			mAnalyzeRlt[str].usedCount += 1;
 		}
+	}
+
+	count = javaClass.vReferencedClassEx.size();
+	for ( i = 0; i < count; i++)
+	{
+		str = javaClass.vReferencedClassEx[i];
+		pLogUtils->i(LINE_TABLE+LINE_TABLE+LINE_TABLE+"[内部应用类]："+str);
 	}
 	pLogUtils->i(LINE_BREAK);
 }
@@ -154,6 +160,22 @@ CString JavaFileAnalyzer::getAnalyzerRltDes(){
 }
 
 void JavaFileAnalyzer::getProDirStructure(CString folder){
+	vJavaKeys.clear();
+	vJavaKeys.push_back("String");
+	vJavaKeys.push_back("Object");
+	vJavaKeys.push_back("TAG");
+	vJavaKeys.push_back("Class");
+	vJavaKeys.push_back("IllegalArgumentException");
+	vJavaKeys.push_back("CloneNotSupportedException");
+	vJavaKeys.push_back("InterruptedException");
+	vJavaKeys.push_back("IOException");
+	vJavaKeys.push_back("IllegalAccessException");
+	vJavaKeys.push_back("RemoteException");
+	vJavaKeys.push_back("NoSuchAlgorithmException");
+	vJavaKeys.push_back("NoSuchAlgorithmException");
+	vJavaKeys.push_back("Exception");
+	vJavaKeys.push_back("Exception");
+
 	CString fileName,filePath;
 	CFileFind fileFind;
 	BOOL hasFind = fileFind.FindFile(folder+"\\*.*");
@@ -230,18 +252,15 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	CString readLine,log,prefix,importClass,tmp;
 
 	//提前加入同级目录下面的其他类
-	vector<CString> mayRefClase;
-	mayRefClase.clear();
-	CString dir = GetFileDir(file);
-	if(0 < mProStructure.count(dir)){
-		VECTOR sameDirClasses = mProStructure[dir];
-		for(int index = 0; index < sameDirClasses.values.size();index++){
-			tmp = sameDirClasses.values[index];
-			if(tmp != jClass->className){
-				mayRefClase.push_back(sameDirClasses.values[index]);
-			}
-		}
-	}
+	vector<CString> mayRefClases;
+	mayRefClases.clear();
+	char ch;
+	bool isStrStart = false;
+	bool isRefInner = false;
+	bool discarded = false;
+	bool isBracket = false;
+	CString mayKey;
+	int singleBraceCount = 0;
 	
 	int findPos = -1;
 	int startPos = 0;
@@ -464,19 +483,108 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 
 				importClass = readLine.Mid(startPos, findPos - startPos);
 				jClass->vReferencedClass.push_back(importClass);
-				mayRefClase.push_back(GetClassName(importClass));
+				tmp = GetClassName(importClass);
+				mayRefClases.push_back(tmp);
 				
 				//没有找到类名 就不往后继续，直接读取下一行
 				continue;
 			}
 		}//if(!isPassClassName)
 
-		//收集类实现中的引用
-		{
-			//需要做一些处理，至少要传递一个整句给collectReferencedClass
-			//判断是否是func的方法：存在关键字“private static int ”
-			collectReferencedClass(readLine, *jClass);
+		/*
+		// debug
+		if(-1 < readLine.Find("throw new IllegalArgumentException(\"Unknown URI",0)){
+			int idsfa = 0;
+			++idsfa;
+			idsfa += 2;
 		}
+		*/
+		//收集类实现中的引用
+		////////////////////////////////////// 遍历readLine 获取内部引用到的类 //////////////////////////////////////////
+		//collectReferencedClass(readLine, *jClass);
+		isStrStart = false;
+		discarded = false;
+		isBracket = false;
+		isRefInner = false;
+		startPos = 0;
+		findPos = -1;
+		for(int index=0; index < readLine.GetLength(); index++){
+			ch  = readLine.GetAt(index);
+			
+			if(startPos == index){
+				if('A' <= ch && ch <= 'Z'){
+					//对类的命名 基本都是大写开始的
+					discarded = false;
+				}else{
+					discarded = true;
+				}
+			}
+			
+			if(isStrStart){
+				if('"' == ch){
+					isStrStart = false;
+					startPos = index + 1;
+				}
+					
+				continue;
+			}
+			
+			if('"' == ch){
+				isStrStart = true;
+				findPos = index;
+				if(!discarded && !isRefInner){
+					mayKey = readLine.Mid(startPos, findPos - startPos);
+					if(1 < mayKey.GetLength() && mayKey != jClass->className  && !dataIsExistInVector(mayKey,  vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases)){
+						jClass->vReferencedClassEx.push_back(mayKey);
+					}
+				}
+				startPos = index + 1;
+
+				continue;
+			}
+
+			if(isBracket){
+				if(']' == ch){
+					isBracket = false;
+					startPos = index + 1;
+				}
+				
+				continue;
+			}
+
+			if('[' == ch){
+				isBracket = true;
+				findPos = index;
+				if(!discarded && !isRefInner){
+					mayKey = readLine.Mid(startPos, findPos - startPos);
+					if(1 < mayKey.GetLength() && mayKey != jClass->className  && !dataIsExistInVector(mayKey,  vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases)){
+						jClass->vReferencedClassEx.push_back(mayKey);
+					}
+				}
+				startPos = findPos + 1;
+
+				continue;
+			}
+
+			if(' ' == ch || '(' == ch || ')' == ch || '.' == ch || '{' == ch || '}' == ch || '=' == ch || ';' == ch || ',' == ch || '&' == ch || '|' == ch || '<' == ch || '>' == ch){
+				findPos = index;
+				if(!discarded && !isRefInner){
+					mayKey = readLine.Mid(startPos, findPos - startPos);
+					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey,  vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases)){
+						jClass->vReferencedClassEx.push_back(mayKey);
+					}
+				}
+				startPos = findPos + 1;
+
+				if('.' == ch){
+					isRefInner = true;
+				}
+				else{
+					isRefInner = false;
+				}
+			}
+		}//for(int index=0; index < content.GetLength(); index++)
+		////////////////////////////////////// 遍历readLine 获取内部引用到的类 end //////////////////////////////////////////
 
 	}//while(readFile.ReadString(readLine))
 
@@ -555,55 +663,6 @@ void JavaFileAnalyzer::receiveAMFData(vector<AMF_STRUCT> amfDate){
 			if(0 < keyCount){
 				mAnalyzeRlt[str].usedCount += 1;
 			}
-		}
-	}
-}
-
-/**
- * 这里的规则比较简单 - 分析下面几类内容：
-	1、方法里面的参数类型
-	2、语句第一个词{不是关键字，且首字符是大写的} 【“;”语句结束符后的也算】
- */
-//
-void JavaFileAnalyzer::collectReferencedClass(const CString content, JavaClass& javaClass){
-	char ch;
-	int startPos = 0;
-	int findPos = -1;
-	bool isStrStart = false;
-	CString mayKey;
-	bool discarded = false;
-	for(int index=0; index < content.GetLength(); index++){
-		ch  = content.GetAt(index);
-
-		if(startPos == index){
-			if('A' <= ch && ch <= 'Z'){
-				//对类的命名 基本都是大写开始的
-				discarded = false;
-			}else{
-				discarded = true;
-			}
-		}
-
-		if(isStrStart){
-			if('"' == ch){
-				isStrStart = false;
-			} else{
-				continue;
-			}
-		}
-
-		if('"' == ch){
-			isStrStart = true;
-			continue;
-		}
-
-		if(' ' == ch || '(' == ch || ')' == ch || '{' == ch || '}' == ch || '.' == ch || '=' == ch || ';' == ch || ',' == ch || '&' == ch || '|' == ch || '<' == ch || '>' == ch){
-			findPos = index;
-			if(!discarded){
-				mayKey = content.Mid(startPos, findPos - startPos);
-				javaClass.vReferencedClassEx.push_back(mayKey);
-			}
-			startPos = findPos + 1;
 		}
 	}
 }

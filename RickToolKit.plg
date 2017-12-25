@@ -6,26 +6,13 @@
 --------------------Configuration: RickToolKit - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA2.tmp" with contents
+Creating temporary file "C:\Users\Administrator\AppData\Local\Temp\RSPFB0C.tmp" with contents
 [
 /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/RickToolKit.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\Github\RickToolKit\AndroidManifestAnalyzer.cpp"
-"D:\Github\RickToolKit\FileAnalyzer.cpp"
-"D:\Github\RickToolKit\FileUtils.cpp"
-"D:\Github\RickToolKit\JavaFileAnalyzer.cpp"
-"D:\Github\RickToolKit\LogUtils.cpp"
-"D:\Github\RickToolKit\RickToolKit.cpp"
-"D:\Github\RickToolKit\RickToolKitDlg.cpp"
-"D:\Github\RickToolKit\XmlUtils.cpp"
+"D:\github\RickToolKit\JavaFileAnalyzer.cpp"
 ]
-Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA2.tmp" 
-Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA3.tmp" with contents
-[
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/RickToolKit.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\Github\RickToolKit\StdAfx.cpp"
-]
-Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA3.tmp" 
-Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA4.tmp" with contents
+Creating command line "cl.exe @C:\Users\Administrator\AppData\Local\Temp\RSPFB0C.tmp" 
+Creating temporary file "C:\Users\Administrator\AppData\Local\Temp\RSPFB0D.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/RickToolKit.pdb" /debug /machine:I386 /out:"Debug/RickToolKit.exe" /pdbtype:sept 
 .\Debug\AndroidManifestAnalyzer.obj
@@ -39,21 +26,26 @@ Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA4.tmp" with 
 .\Debug\XmlUtils.obj
 .\Debug\RickToolKit.res
 ]
-Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSPAFA4.tmp"
+Creating command line "link.exe @C:\Users\Administrator\AppData\Local\Temp\RSPFB0D.tmp"
 <h3>Output Window</h3>
 Compiling...
-StdAfx.cpp
-Compiling...
-AndroidManifestAnalyzer.cpp
-FileAnalyzer.cpp
-FileUtils.cpp
 JavaFileAnalyzer.cpp
-LogUtils.cpp
-RickToolKit.cpp
-RickToolKitDlg.cpp
-XmlUtils.cpp
-Generating Code...
 Linking...
+Creating temporary file "C:\Users\Administrator\AppData\Local\Temp\RSPFC17.tmp" with contents
+[
+/nologo /o"Debug/RickToolKit.bsc" 
+.\Debug\StdAfx.sbr
+.\Debug\AndroidManifestAnalyzer.sbr
+.\Debug\FileAnalyzer.sbr
+.\Debug\FileUtils.sbr
+.\Debug\JavaFileAnalyzer.sbr
+.\Debug\LogUtils.sbr
+.\Debug\RickToolKit.sbr
+.\Debug\RickToolKitDlg.sbr
+.\Debug\XmlUtils.sbr]
+Creating command line "bscmake.exe @C:\Users\Administrator\AppData\Local\Temp\RSPFC17.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
 
 
 

@@ -33,7 +33,6 @@ private:
 	void recycleLogUtils();
 	void dillClassInheritanceRelationship(CString content, JavaClass& javaClass);
 	void scanReferencedClassVector(JavaClass& javaClass);
-	void collectReferencedClass(const CString content, JavaClass& javaClass);
 
 public:
     virtual void analyzerFile(const CString file);

@@ -25,7 +25,7 @@ CString GetFileSuffix(const CString fileName){
 	
 	CString suffix = fileName.Right(fileName.GetLength() - dotPos - 1);
 	suffix.MakeLower();
-
+	
 	return suffix;
 }
 
@@ -34,11 +34,11 @@ CString GetFileName(const CString file){
 	if(-1 == separatorPos){
 		separatorPos = file.ReverseFind('/');
 	}
-
+	
 	if(-1 == separatorPos){
 		separatorPos = 0;
 	}
-
+	
 	return file.Right(file.GetLength() - separatorPos - 1);
 }
 
@@ -52,7 +52,7 @@ CString GetFileDir(const CString file){
 	if(-1 == separatorPos){
 		separatorPos = file.ReverseFind('/');
 	}
-
+	
 	return file.Left(separatorPos);
 }
 
@@ -61,7 +61,7 @@ CString GetFileNameWithoutSuffix(const CString file){
 	if(-1 == separatorPos){
 		separatorPos = file.ReverseFind('/');
 	}
-
+	
 	if(-1 == separatorPos){
 		separatorPos = 0;
 	}
@@ -70,7 +70,7 @@ CString GetFileNameWithoutSuffix(const CString file){
 	if(dotPos < separatorPos){
 		dotPos = file.GetLength();
 	}
-
+	
 	return file.Mid(separatorPos + 1, dotPos - separatorPos -1);
 }
 
@@ -79,7 +79,7 @@ CString GetFileNameWithoutSuffixEx(const CString fileName){
 	if(dotPos < 0){
 		dotPos = fileName.GetLength();
 	}
-
+	
 	return fileName.Left(dotPos);
 }
 
@@ -95,4 +95,17 @@ void ensureDir(const CString & csDir){
 	if(!IsDirExist(csDir)){
 		CreateDirectory(csDir, NULL);
 	}
+}
+
+bool dataIsExistInVector(const CString &data, const vector<CString> &vValues){
+	int vectorSize = vValues.size();
+	CString value;
+	for(int index = 0; index < vectorSize; index++){
+		value = vValues[index];
+		if(data == value){
+			return true;
+		}
+	}
+	
+	return false;
 }

@@ -141,6 +141,8 @@ CString GetClassName(const CString importContent);
 bool IsDirExist(const CString & csDir);
 void ensureDir(const CString & csDir);
 
+bool dataIsExistInVector(const CString &data, const vector<CString> &vValues);
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
