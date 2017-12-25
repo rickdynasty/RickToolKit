@@ -172,9 +172,14 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	vJavaKeys.push_back("IllegalAccessException");
 	vJavaKeys.push_back("RemoteException");
 	vJavaKeys.push_back("NoSuchAlgorithmException");
-	vJavaKeys.push_back("NoSuchAlgorithmException");
+	vJavaKeys.push_back("NoSuchMethodException");
+	vJavaKeys.push_back("ClassNotFoundException");
 	vJavaKeys.push_back("Exception");
-	vJavaKeys.push_back("Exception");
+	vJavaKeys.push_back("RuntimeException");
+	vJavaKeys.push_back("Runnable");
+	vJavaKeys.push_back("IllegalStateException");
+	vJavaKeys.push_back("NumberFormatException");
+	vJavaKeys.push_back("InstantiationException");
 
 	CString fileName,filePath;
 	CFileFind fileFind;
@@ -534,7 +539,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				findPos = index;
 				if(!discarded && !isRefInner){
 					mayKey = readLine.Mid(startPos, findPos - startPos);
-					if(1 < mayKey.GetLength() && mayKey != jClass->className  && !dataIsExistInVector(mayKey,  vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases)){
+					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey, vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases) && !dataIsExistInVector(mayKey, jClass->vReferencedClassEx)){
 						jClass->vReferencedClassEx.push_back(mayKey);
 					}
 				}
@@ -557,7 +562,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				findPos = index;
 				if(!discarded && !isRefInner){
 					mayKey = readLine.Mid(startPos, findPos - startPos);
-					if(1 < mayKey.GetLength() && mayKey != jClass->className  && !dataIsExistInVector(mayKey,  vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases)){
+					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey, vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases) && !dataIsExistInVector(mayKey, jClass->vReferencedClassEx)){
 						jClass->vReferencedClassEx.push_back(mayKey);
 					}
 				}
@@ -570,7 +575,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				findPos = index;
 				if(!discarded && !isRefInner){
 					mayKey = readLine.Mid(startPos, findPos - startPos);
-					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey,  vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases)){
+					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey, vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases) && !dataIsExistInVector(mayKey, jClass->vReferencedClassEx)){
 						jClass->vReferencedClassEx.push_back(mayKey);
 					}
 				}
