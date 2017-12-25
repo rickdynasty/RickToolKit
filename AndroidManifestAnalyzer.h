@@ -29,8 +29,11 @@ public:
 	virtual void closeOpenFile();
 
 private:
-	CString mPackageName;
-	vector<CString> vClassKeys;
+	vector<AMF_STRUCT> mManifestReferenceds;
+	void push_back(CString ref, AMF_STRUCT& value);
+
+public:
+	const vector<AMF_STRUCT> getManifestReferenceds();
 };
 
 #endif // !defined(AFX_ANDROIDMANIFESTANALYZER_H__DA983FC7_F570_4AC5_B8F5_F2813BC20F14__INCLUDED_)

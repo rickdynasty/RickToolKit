@@ -67,13 +67,16 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 	
 	createFileAnalyzer(SUFFIX_JAVA);
 	pFileAnalyzer->clear();
+	pSpecialFileAnalyzer->clear();
 
 	scanFolderForSuffix(projectPath, SUFFIX_JAVA);
 	if(!additionalProjectPath.IsEmpty()){
 		scanFolderForSuffix(additionalProjectPath, SUFFIX_JAVA);
 	}
 
+	((JavaFileAnalyzer*)pFileAnalyzer)->receiveAMFData(((AndroidManifestAnalyzer*)pSpecialFileAnalyzer)->getManifestReferenceds());
 	pFileAnalyzer->printResult();
+	pSpecialFileAnalyzer->printResult();
 
 	CString analyzerRlt = pFileAnalyzer->getAnalyzerRltDes();
 	

@@ -18,8 +18,7 @@ static char THIS_FILE[]=__FILE__;
 
 JavaFileAnalyzer::JavaFileAnalyzer()
 {
-	mAnalyzeRlt.clear();
-	mForRes = false;
+	clear();
 }
 
 JavaFileAnalyzer::~JavaFileAnalyzer()
@@ -47,6 +46,7 @@ void JavaFileAnalyzer::clear(){
 	mClassCache.clear();
 	mRltDes = ANALYSIS_RESULT_DEFAULT_DES;
 	mForRes = false;
+	pAMFData = NULL;
 }
 
 void JavaFileAnalyzer::closeOpenFile(){
@@ -90,20 +90,20 @@ void JavaFileAnalyzer::printResult(){
 
 void JavaFileAnalyzer::scanReferencedClassVector(JavaClass& javaClass){
 	CString str = javaClass.packageName + "." + javaClass.className;
-	pLogUtils->i(str, FALSE);
+	pLogUtils->i(str);
 
 	const int count = javaClass.vReferencedClass.size();
 	for (int i = 0; i < count; i++)
 	{
 		str = javaClass.vReferencedClass[i];
-		pLogUtils->i(LINE_TABLE+LINE_TABLE+str, FALSE);
+		pLogUtils->i(LINE_TABLE+LINE_TABLE+str);
 
 		int keyCount = mAnalyzeRlt.count(str);
 		if(0 < keyCount){
-			mAnalyzeRlt[javaClass.vReferencedClass[i]].usedCount += 1;
+			mAnalyzeRlt[str].usedCount += 1;
 		}
 	}
-	pLogUtils->i(LINE_BREAK, FALSE);
+	pLogUtils->i(LINE_BREAK);
 }
 
 CString JavaFileAnalyzer::getAnalyzerRltDes(){
@@ -391,6 +391,9 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			}
 		}//if(!isPassClassName)
 
+		//收集类实现中的引用
+
+
 	}//while(readFile.ReadString(readLine))
 
 	//写到最后
@@ -454,5 +457,20 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 			findPos = implementsContent.Find(COMMA_FLG, startPos);
 		}
 		javaClass.vImplementsInterfaces.push_back(implementsContent.Mid(startPos));
+	}
+}
+
+void JavaFileAnalyzer::receiveAMFData(vector<AMF_STRUCT> amfDate){
+	CString str;
+	for(int i = 0; i < amfDate.size(); i++){
+		for(int index=0; index < amfDate[i].vReferencedClass.size();index++)
+		{
+			str = amfDate[i].vReferencedClass[index];
+			
+			int keyCount = mAnalyzeRlt.count(str);
+			if(0 < keyCount){
+				mAnalyzeRlt[str].usedCount += 1;
+			}
+		}
 	}
 }

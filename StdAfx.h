@@ -31,6 +31,7 @@ typedef struct{
 		vReferencedClass.clear();
 		vImplementsInterfaces.clear();
 		vMethods.clear();
+		vReferencedClassEx.clear();
 	}
 	CString filePath;						//文件全路径
 	CString packageName;					//包名
@@ -39,8 +40,18 @@ typedef struct{
 	CString parentClassName;				//父类
 	vector<CString> vImplementsInterfaces;	//实现的接口
 	vector<CString> vMethods;				//方法
+	vector<CString> vReferencedClassEx;		//引用的类 - 这里录入的是实现体内部的，没记录在import里面的
 	int usedCount;						//被引用的次数
 }JavaClass;
+
+typedef struct{
+	void init(){
+		packageName = "";
+		vReferencedClass.clear();
+	}
+	CString packageName;
+	vector<CString> vReferencedClass;
+}AMF_STRUCT;
 
 #define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 #define FILE_ATTRIBUTE_DIRECTORY            0x00000010
@@ -61,6 +72,26 @@ const CString FILE_ANDROID_MANIFEST	= "AndroidManifest.xml";
 const CString JAVA_NOTE_ONELINE_FLG ="//";
 const CString JAVA_NOTE_FLG_BEGIN ="/*";
 const CString JAVA_NOTE_FLG_END ="*/";
+const CString XML_NOTE_FLG_BEGIN ="<!--";
+const CString XML_NOTE_FLG_END ="-->";
+
+//XML
+const CString MANIFEST_BEGIN	= "<manifest ";
+const CString MANIFEST_END		= "</manifest>";
+const CString XML_FILE_KEY_PACKAGE		= "package=\"";
+const CString QUOTATION_MARK	= "\"";	//双引号 - 赋值标识符
+const CString XML_DECLARATION_BEGIN="<?xml";
+const CString XML_DECLARATION_END="?>";
+const CString XML_CONTENT_END="/>";
+
+const CString MANIFEST_APPLICATION_BEGIN = "<application";
+const CString MANIFEST_ACTIVITY_BEGIN = "<activity";
+const CString MANIFEST_PROVIDER_BEGIN = "<provider";
+const CString MANIFEST_SERVICE_BEGIN = "<service";
+const CString MANIFEST_RECEIVER_BEGIN = "<receiver";
+const CString MANIFEST_ATTRIBUTES_VALUE_KEY = "android:name=\"";
+const CString XML_ATTRIBUTES_NAME_END = ">";
+const CString XML_ATTRIBUTES_NAME_END2 = "/>";
 
 //
 const CString JAVA_FILE_PACKAGE_KEY = "package ";
