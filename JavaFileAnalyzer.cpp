@@ -23,14 +23,7 @@ JavaFileAnalyzer::JavaFileAnalyzer()
 
 JavaFileAnalyzer::~JavaFileAnalyzer()
 {
-	recycleLogUtils();
-}
 
-void JavaFileAnalyzer::recycleLogUtils(){
-	if(NULL != pLogUtils){
-		delete pLogUtils;
-		pLogUtils = NULL;
-	}
 }
 
 void JavaFileAnalyzer::setForRes(bool forRes){
@@ -48,12 +41,7 @@ void JavaFileAnalyzer::clear(){
 	vJavaKeys.clear();
 	mRltDes = ANALYSIS_RESULT_DEFAULT_DES;
 	mForRes = false;
-	pAMFData = NULL;
 	mClearRedundantFiles = false;
-}
-
-void JavaFileAnalyzer::closeOpenFile(){
-	
 }
 
 void JavaFileAnalyzer::printResult(){
@@ -888,12 +876,12 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 	}
 }
 
-void JavaFileAnalyzer::receiveAMFData(vector<AMF_STRUCT> amfDate){
+void JavaFileAnalyzer::receiveAMFData(vector<XML_REF_STRUCT> refDate){
 	CString str;
-	for(int i = 0; i < amfDate.size(); i++){
-		for(int index=0; index < amfDate[i].vReferencedClass.size();index++)
+	for(int i = 0; i < refDate.size(); i++){
+		for(int index=0; index < refDate[i].vReferencedClass.size();index++)
 		{
-			str = amfDate[i].vReferencedClass[index];
+			str = refDate[i].vReferencedClass[index];
 			
 			int keyCount = mAnalyzeRlt.count(str);
 			if(0 < keyCount){

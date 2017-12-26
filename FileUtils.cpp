@@ -28,12 +28,26 @@ FileUtils::FileUtils()
 FileUtils::~FileUtils()
 {
 	recycleFileAnalyzer();
+	recycleLogUtils();
 }
 
 void FileUtils::recycleFileAnalyzer(){
 	if(NULL != pFileAnalyzer){
 		delete pFileAnalyzer;
 		pFileAnalyzer = NULL;
+	}
+
+	//暂时不清楚为啥不能delete
+	//if(NULL != pSpecialFileAnalyzer){
+	//	delete pSpecialFileAnalyzer;
+	//	pSpecialFileAnalyzer = NULL;
+	//}
+}
+
+void FileUtils::recycleLogUtils(){
+	if(NULL != pLogUtils){
+		delete pLogUtils;
+		pLogUtils = NULL;
 	}
 }
 

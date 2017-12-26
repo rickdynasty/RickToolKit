@@ -44,7 +44,7 @@ void AndroidManifestAnalyzer::setForRes(bool forRes)
 void AndroidManifestAnalyzer::printResult()	//打印结果
 {
 	for(int i = 0; i < mManifestReferenceds.size(); i++){
-		pLogUtils->i("[Project:"+ mManifestReferenceds[i].packageName);
+		pLogUtils->i("[Project:"+ mManifestReferenceds[i].key);
 		for(int index=0; index < mManifestReferenceds[i].vReferencedClass.size();index++)
 		{
 			pLogUtils->i(LINE_TABLE + mManifestReferenceds[i].vReferencedClass[index]);
@@ -56,11 +56,6 @@ void AndroidManifestAnalyzer::printResult()	//打印结果
 CString AndroidManifestAnalyzer::getAnalyzerRltDes()
 {
 	return ANALYSIS_RESULT_DEFAULT_DES;
-}
-
-void AndroidManifestAnalyzer::closeOpenFile()
-{
-	
 }
 
 void AndroidManifestAnalyzer::analyzerFile(const CString file){
@@ -96,7 +91,7 @@ void AndroidManifestAnalyzer::analyzerFile(const CString file){
 	const int cReceiverKeyLen	= MANIFEST_RECEIVER_BEGIN.GetLength();
 	CString readLine,log,prefix,tmp;
 
-	AMF_STRUCT referencedClass;
+	XML_REF_STRUCT referencedClass;
 	referencedClass.init();
 	
 	int findPos = -1;
@@ -174,9 +169,9 @@ void AndroidManifestAnalyzer::analyzerFile(const CString file){
 					return;
 				}
 
-				referencedClass.packageName = readLine.Mid(startPos, findPos - startPos);
-				referencedClass.packageName.TrimLeft();
-				referencedClass.packageName.TrimRight();
+				referencedClass.key = readLine.Mid(startPos, findPos - startPos);
+				referencedClass.key.TrimLeft();
+				referencedClass.key.TrimRight();
 			}
 			
 			continue;			
@@ -300,17 +295,17 @@ void AndroidManifestAnalyzer::analyzerFile(const CString file){
 	readFile.Close();
 }
 
-void AndroidManifestAnalyzer::push_back(CString ref, AMF_STRUCT& value){
+void AndroidManifestAnalyzer::push_back(CString ref, XML_REF_STRUCT& value){
 	//如果key是以"."开头，需要在前面补上packageName
 	ref.TrimLeft();
 	ref.TrimRight();
 	if(0 == ref.Find(".", 0)){
-		ref = value.packageName + ref;
+		ref = value.key + ref;
 	}
 
 	value.vReferencedClass.push_back(ref);
 }
 
-const vector<AMF_STRUCT> AndroidManifestAnalyzer::getManifestReferenceds(){
+const vector<XML_REF_STRUCT> AndroidManifestAnalyzer::getManifestReferenceds(){
 	return mManifestReferenceds;
 }

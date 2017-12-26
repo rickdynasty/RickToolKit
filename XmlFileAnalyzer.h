@@ -25,7 +25,6 @@ public:
 	void setForRes(bool forRes);
 	virtual void printResult();	//´òÓ¡½á¹û
 	virtual CString getAnalyzerRltDes();
-	virtual void closeOpenFile();
 
 };
 

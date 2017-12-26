@@ -28,7 +28,6 @@ public:
 	virtual void printResult() = 0;
 	virtual CString getAnalyzerRltDes(){ return ANALYSIS_RESULT_DEFAULT_DES;}
 	virtual CString getSuffix(){ return mSuffix;}
-	virtual void closeOpenFile() = 0;
 	void setLogUtils(LogUtils* logUtils){ pLogUtils = logUtils;}
 	void setClearRedundantFiles(bool needClear){ mClearRedundantFiles = needClear;}
 };

@@ -26,14 +26,13 @@ public:
 	void setForRes(bool forRes);
 	virtual void printResult();	//´òÓ¡½á¹û
 	virtual CString getAnalyzerRltDes();
-	virtual void closeOpenFile();
 
 private:
-	vector<AMF_STRUCT> mManifestReferenceds;
-	void push_back(CString ref, AMF_STRUCT& value);
+	vector<XML_REF_STRUCT> mManifestReferenceds;
+	void push_back(CString ref, XML_REF_STRUCT& value);
 
 public:
-	const vector<AMF_STRUCT> getManifestReferenceds();
+	const vector<XML_REF_STRUCT> getManifestReferenceds();
 };
 
 #endif // !defined(AFX_ANDROIDMANIFESTANALYZER_H__DA983FC7_F570_4AC5_B8F5_F2813BC20F14__INCLUDED_)

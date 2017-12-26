@@ -44,8 +44,3 @@ CString XmlFileAnalyzer::getAnalyzerRltDes()
 	return ANALYSIS_RESULT_DEFAULT_DES;
 }
 
-void XmlFileAnalyzer::closeOpenFile()
-{
-	
-}
-

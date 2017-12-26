@@ -47,12 +47,13 @@ typedef struct{
 
 typedef struct{
 	void init(){
-		packageName = "";
+		key = "";
 		vReferencedClass.clear();
 	}
-	CString packageName;
+
+	CString key;
 	vector<CString> vReferencedClass;
-}AMF_STRUCT;
+}XML_REF_STRUCT;
 
 typedef struct{
 	vector<CString> values;

@@ -21,22 +21,21 @@ class JavaFileAnalyzer : public FileAnalyzer
 public:
 	JavaFileAnalyzer();
 	virtual ~JavaFileAnalyzer();
+
+    virtual void analyzerFile(const CString file);
 	virtual void setSuffix(CString suffix);
 	virtual void clear();
 	void setForRes(bool forRes);
 	virtual void printResult();	//´òÓ¡½á¹û
 	virtual CString getAnalyzerRltDes();
-	virtual void closeOpenFile();
-	void getProDirStructure(CString folder);
 
 private:
-	void recycleLogUtils();
 	void dillClassInheritanceRelationship(CString content, JavaClass& javaClass, vector<CString>& importRefClases);
 	void scanReferencedClassVector(JavaClass& javaClass);
 
 public:
-    virtual void analyzerFile(const CString file);
-	void receiveAMFData(vector<AMF_STRUCT> amfDate);
+	void receiveAMFData(vector<XML_REF_STRUCT> refDate);
+	void getProDirStructure(CString folder);
 
 private:
 	map<CString, JavaClass> mAnalyzeRlt;
@@ -50,7 +49,6 @@ private:
 
 	bool mForRes;
 	CString mRltDes;
-	AMF_STRUCT *pAMFData;
 };
 
 #endif // !defined(AFX_JAVAFILEANALYZER_H__83F03EF7_0CC8_41F8_84E6_EAFD925AC683__INCLUDED_)

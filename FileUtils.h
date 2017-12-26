@@ -21,6 +21,7 @@ private:
 	void scanFolderForSuffix(CString folder, const CString targetSuffix);
 	void createFileAnalyzer(const CString suffixFlg);
 	void recycleFileAnalyzer();
+	void recycleLogUtils();
 
 public:
 	CString analysisLazyClass(CString projectPath, CString additionalProjectPath="");
