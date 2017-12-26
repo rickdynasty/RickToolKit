@@ -165,6 +165,10 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	vJavaKeys.push_back("Object");
 	vJavaKeys.push_back("TAG");
 	vJavaKeys.push_back("Class");
+	vJavaKeys.push_back("ClassLoader");
+	vJavaKeys.push_back("Boolean");
+	vJavaKeys.push_back("Throwable");
+	
 	vJavaKeys.push_back("IllegalArgumentException");
 	vJavaKeys.push_back("CloneNotSupportedException");
 	vJavaKeys.push_back("InterruptedException");
@@ -256,9 +260,11 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	
 	CString readLine,log,prefix,importClass,tmp;
 
-	//提前加入同级目录下面的其他类
-	vector<CString> mayRefClases;
-	mayRefClases.clear();
+	//加入improt类
+	vector<CString> importRefClases;
+	vector<CString> innerImportRefClases;
+	importRefClases.clear();
+	innerImportRefClases.clear();
 	char ch;
 	bool isStrStart = false;
 	bool isRefInner = false;
@@ -266,6 +272,10 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	bool isBracket = false;
 	CString mayKey;
 	int singleBraceCount = 0;
+	bool isFullPackageRef = false;
+	bool isJavaKey = false;
+	bool isExistInVec = false;
+	bool isImportClass = false;
 	
 	int findPos = -1;
 	int startPos = 0;
@@ -489,21 +499,20 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				importClass = readLine.Mid(startPos, findPos - startPos);
 				jClass->vReferencedClass.push_back(importClass);
 				tmp = GetClassName(importClass);
-				mayRefClases.push_back(tmp);
+				importRefClases.push_back(tmp);
 				
 				//没有找到类名 就不往后继续，直接读取下一行
 				continue;
 			}
 		}//if(!isPassClassName)
 
-		/*
+		
 		// debug
-		if(-1 < readLine.Find("throw new IllegalArgumentException(\"Unknown URI",0)){
+		if(-1 < readLine.Find("argsBundle.putInt(ServiceProvider.PID",0)){
 			int idsfa = 0;
 			++idsfa;
 			idsfa += 2;
 		}
-		*/
 		//收集类实现中的引用
 		////////////////////////////////////// 遍历readLine 获取内部引用到的类 //////////////////////////////////////////
 		//collectReferencedClass(readLine, *jClass);
@@ -511,7 +520,11 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		discarded = false;
 		isBracket = false;
 		isRefInner = false;
+		isJavaKey = false;
+		isExistInVec = false;
+		isImportClass = false;
 		startPos = 0;
+		comparePos = 0;
 		findPos = -1;
 		for(int index=0; index < readLine.GetLength(); index++){
 			ch  = readLine.GetAt(index);
@@ -522,6 +535,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 					discarded = false;
 				}else{
 					discarded = true;
+					isFullPackageRef = false;//非大写，就认为不会是全package引用
 				}
 			}
 			
@@ -536,10 +550,15 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			
 			if('"' == ch){
 				isStrStart = true;
+				comparePos = -1;	//用于全package的引用开始位置
+				isFullPackageRef = false;
 				findPos = index;
 				if(!discarded && !isRefInner){
 					mayKey = readLine.Mid(startPos, findPos - startPos);
-					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey, vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases) && !dataIsExistInVector(mayKey, jClass->vReferencedClassEx)){
+					isExistInVec = dataIsExistInVector(mayKey, jClass->vReferencedClassEx);
+					isJavaKey = dataIsExistInVector(mayKey, vJavaKeys);
+					isImportClass = dataIsExistInVector(mayKey, importRefClases);
+					if(1 < mayKey.GetLength() && mayKey != jClass->className && !isJavaKey && !isImportClass && !isExistInVec){
 						jClass->vReferencedClassEx.push_back(mayKey);
 					}
 				}
@@ -559,10 +578,15 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 
 			if('[' == ch){
 				isBracket = true;
+				comparePos = -1;	//用于全package的引用开始位置
+				isFullPackageRef = false;
 				findPos = index;
 				if(!discarded && !isRefInner){
 					mayKey = readLine.Mid(startPos, findPos - startPos);
-					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey, vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases) && !dataIsExistInVector(mayKey, jClass->vReferencedClassEx)){
+					isExistInVec = dataIsExistInVector(mayKey, jClass->vReferencedClassEx);
+					isJavaKey = dataIsExistInVector(mayKey, vJavaKeys);
+					isImportClass = dataIsExistInVector(mayKey, importRefClases);
+					if(1 < mayKey.GetLength() && mayKey != jClass->className && !isJavaKey && !isImportClass && !isExistInVec){
 						jClass->vReferencedClassEx.push_back(mayKey);
 					}
 				}
@@ -571,23 +595,61 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				continue;
 			}
 
-			if(' ' == ch || '(' == ch || ')' == ch || '.' == ch || '{' == ch || '}' == ch || '=' == ch || ';' == ch || ',' == ch || '&' == ch || '|' == ch || '<' == ch || '>' == ch){
+			if('.' == ch){
 				findPos = index;
-				if(!discarded && !isRefInner){
+				isRefInner = true;
+				if(isFullPackageRef){	//如果之前记录了可能是全pakcage引用，就不重新记录startPos
+					continue;
+				}
+				
+				if(!discarded){
 					mayKey = readLine.Mid(startPos, findPos - startPos);
-					if(1 < mayKey.GetLength() && mayKey != jClass->className && !dataIsExistInVector(mayKey, vJavaKeys) && !dataIsExistInVector(mayKey, mayRefClases) && !dataIsExistInVector(mayKey, jClass->vReferencedClassEx)){
-						jClass->vReferencedClassEx.push_back(mayKey);
+					isImportClass = dataIsExistInVector(mayKey, importRefClases);
+					isJavaKey = dataIsExistInVector(mayKey, vJavaKeys);
+					isExistInVec = dataIsExistInVector(mayKey, jClass->vReferencedClassEx);
+					discarded = true; //“.”后面的内容都不需要单独录入
+					if(mayKey == jClass->className || isJavaKey || isImportClass || isExistInVec){
+						isFullPackageRef = false;
+						continue;
+					}
+					
+					jClass->vReferencedClassEx.push_back(mayKey);
+					if(!isFullPackageRef){
+						//保留上次的位置
+						comparePos = startPos;
+						isFullPackageRef = true;	//这里记录一下，在下次匹配大写对的时候，如果不符合就给纠正过来
 					}
 				}
-				startPos = findPos + 1;
-
-				if('.' == ch){
-					isRefInner = true;
-				}
-				else{
-					isRefInner = false;
-				}
+				continue; //“.”没必要记录位置了
+			} else {
+				isRefInner = false;
+				if(' ' == ch || '(' == ch || ')' == ch || '{' == ch || '}' == ch || '=' == ch || ';' == ch || ',' == ch || '&' == ch || '|' == ch || '<' == ch || '>' == ch || ':' == ch){
+					findPos = index;
+					if(!discarded){						
+						mayKey = readLine.Mid(startPos, findPos - startPos);
+						isExistInVec = dataIsExistInVector(mayKey, jClass->vReferencedClassEx);
+						isJavaKey = dataIsExistInVector(mayKey, vJavaKeys);
+						isImportClass = dataIsExistInVector(mayKey, importRefClases);
+						if(1 < mayKey.GetLength() && mayKey != jClass->className && !isJavaKey && !isImportClass && !isExistInVec){
+							jClass->vReferencedClassEx.push_back(mayKey);
+						}
+					}
+					
+					//如果标识之前的内容是全路径的，这里需要做一下处理
+					if(isFullPackageRef && -1 < comparePos && comparePos + 2 < index)
+					{
+						importClass = readLine.Mid(startPos, findPos - startPos);
+						isExistInVec = dataIsExistInVector(importClass, innerImportRefClases);
+						if(!isExistInVec){
+							innerImportRefClases.push_back(importClass);
+						}
+					}
+					comparePos = -1;	//用于全package的引用开始位置
+					isFullPackageRef = false;
+				}//if(' ' == ch || '(' == ch || ')' == ch || '{' == ch || '}' == ch
 			}
+			
+			startPos = findPos + 1;
 		}//for(int index=0; index < content.GetLength(); index++)
 		////////////////////////////////////// 遍历readLine 获取内部引用到的类 end //////////////////////////////////////////
 
@@ -603,6 +665,11 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		//将内部引用添加到import里面用作计算引用计数的
 		for(int index=0; index < jClass->vReferencedClassEx.size(); index++){
 			importClass = jClass->packageName+"."+jClass->vReferencedClassEx[index];
+			jClass->vReferencedClass.push_back(importClass);
+		}
+
+		for(index=0; index < innerImportRefClases.size(); index++){
+			importClass = innerImportRefClases[index];
 			jClass->vReferencedClass.push_back(importClass);
 		}
 
