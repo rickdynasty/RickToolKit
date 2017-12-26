@@ -45,6 +45,9 @@ private:
 	vector<CString> vJavaKeys;
 	vector<CString> vClearClassFileExceptPrefix;
 
+	
+	vector<CString> vImprotClasseWhiteVec;
+
 	bool mForRes;
 	CString mRltDes;
 	AMF_STRUCT *pAMFData;
