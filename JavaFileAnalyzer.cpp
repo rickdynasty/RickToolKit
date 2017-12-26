@@ -473,9 +473,9 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 							inheritanceRelationship+= (SPACE_FLG + readLine);
 						}
 					}
-					dillClassInheritanceRelationship(inheritanceRelationship, *jClass);
+					dillClassInheritanceRelationship(inheritanceRelationship, *jClass, importRefClases);
 				} else {
-					dillClassInheritanceRelationship(readLine.Mid(startPos, findPos - startPos + 1), *jClass);
+					dillClassInheritanceRelationship(readLine.Mid(startPos, findPos - startPos + 1), *jClass, importRefClases);
 				}
 
 				isPassClassName = true;
@@ -508,7 +508,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 
 		
 		// debug
-		if(-1 < readLine.Find("argsBundle.putInt(ServiceProvider.PID",0)){
+		if(-1 < readLine.Find("public TRom.BrushParam stBrushParam = null;",0)){
 			int idsfa = 0;
 			++idsfa;
 			idsfa += 2;
@@ -638,7 +638,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 					//如果标识之前的内容是全路径的，这里需要做一下处理
 					if(isFullPackageRef && -1 < comparePos && comparePos + 2 < index)
 					{
-						importClass = readLine.Mid(startPos, findPos - startPos);
+						importClass = readLine.Mid(comparePos, findPos - comparePos);
 						isExistInVec = dataIsExistInVector(importClass, innerImportRefClases);
 						if(!isExistInVec){
 							innerImportRefClases.push_back(importClass);
@@ -684,16 +684,17 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 //	或者是空的
 //	const CString JAVA_FILE_EXTENDS_KEY	= "extends ";
 //	const CString JAVA_FILE_IMPLEMENTS_KEY	= "implements ";
-void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaClass& javaClass){
+void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaClass& javaClass, vector<CString>& importRefClases){
 	content.TrimLeft();
 	content.TrimRight();
 
 	int findPos = -1;
 	int startPos = 0;
-	if(content.IsEmpty()){
+	if(content.IsEmpty() || content.GetLength() < 8){ //关键字的长度都不止8
 		return;
 	}
 
+	bool isImportClass = false;
 	//获取父类Name
 	findPos = content.Find(JAVA_FILE_EXTENDS_KEY, startPos);
 	if(-1 < findPos){
@@ -704,29 +705,59 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 		}
 
 		javaClass.parentClassName = content.Mid(startPos, findPos - startPos);
+		//如果不是全package引用 需要校验是否在improt里面
+		if(javaClass.parentClassName.Find(DOT_FLG, 0) < 0){
+			isImportClass = dataIsExistInVector(javaClass.parentClassName, importRefClases);
+			if(!isImportClass){
+				javaClass.vReferencedClass.push_back(javaClass.packageName+DOT_FLG+javaClass.parentClassName);
+				importRefClases.push_back(javaClass.parentClassName);
+			}
+		}
+
 		startPos = findPos -1;
 	}
 
 	//获取实现的接口
 	findPos = content.Find(JAVA_FILE_IMPLEMENTS_KEY, startPos);
 	if(-1 < findPos){
-		startPos = findPos + JAVA_FILE_IMPLEMENTS_KEY.GetLength();
+		CString implementsStr;
+		const int cImplementsKeyLen = JAVA_FILE_IMPLEMENTS_KEY.GetLength();
+		startPos = findPos + cImplementsKeyLen;
 		findPos = content.Find(SPACE_FLG, startPos);
 		if(findPos < startPos){
 			findPos = content.GetLength();
 		}
-
+		//const CString COMMA_FLG				= ",";
 		const int commaLen = COMMA_FLG.GetLength();
-		CString implementsContent = content.Mid(startPos, findPos - startPos);
-		implementsContent.Replace(SPACE_FLG, "");
+		CString implementsContent = content.Mid(startPos, findPos - startPos); //implements的全部内容
+		implementsContent.Replace(SPACE_FLG, "");//清除里面的空格
+		//开始通过“,”开分割多实现接口
 		startPos = 0;
 		findPos = implementsContent.Find(COMMA_FLG, startPos);
 		while(-1 < findPos){
-			javaClass.vImplementsInterfaces.push_back(implementsContent.Mid(startPos, findPos - startPos));
+			implementsStr = implementsContent.Mid(startPos, findPos - startPos);
+			//如果不是全package引用 需要校验是否在improt里面
+			if(implementsStr.Find(DOT_FLG, 0) < 0){
+				isImportClass = dataIsExistInVector(implementsStr, importRefClases);
+				if(!isImportClass){
+					javaClass.vReferencedClass.push_back(javaClass.packageName + DOT_FLG + implementsStr);
+					importRefClases.push_back(implementsStr);
+				}
+			}
+			javaClass.vImplementsInterfaces.push_back(implementsStr);
 			startPos = findPos + commaLen;
 			findPos = implementsContent.Find(COMMA_FLG, startPos);
 		}
-		javaClass.vImplementsInterfaces.push_back(implementsContent.Mid(startPos));
+		implementsStr = implementsContent.Mid(startPos, implementsContent.GetLength() - startPos);
+		//如果不是全package引用 需要校验是否在improt里面
+		if(implementsStr.Find(DOT_FLG, 0) < 0){
+			isImportClass = dataIsExistInVector(implementsStr, importRefClases);
+			if(!isImportClass){
+				javaClass.vReferencedClass.push_back(javaClass.packageName + DOT_FLG + implementsStr);
+				importRefClases.push_back(implementsStr);
+			}
+		}
+		javaClass.vImplementsInterfaces.push_back(implementsStr);
 	}
 }
 

@@ -110,6 +110,7 @@ const CString PACKAGE_or_IMPROT_EDN_FLG = ";";
 const CString SPACE_FLG				= " ";
 const CString TEMPLATE_FLG_BEGIN	= "<";
 const CString COMMA_FLG				= ",";
+const CString DOT_FLG				= ".";
 const CString JAVA_CLASS_BODY_BEGIN = "{";
 
 //ÊôÐÔ¹Ø¼ü×Ö
