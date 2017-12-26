@@ -796,12 +796,24 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 	if(-1 < findPos){
 		startPos = findPos + JAVA_FILE_EXTENDS_KEY.GetLength();
 		findPos = content.Find(SPACE_FLG, startPos);
+		int contentLen = content.GetLength();
+		
 		if(findPos < startPos){
 			findPos = content.GetLength();
+		} else{			
+			if(findPos - startPos < 2){
+				for(int index = findPos; index < contentLen; index++){
+					if(' ' != content.GetAt(index)){
+						startPos = index;
+						break;
+					}
+				}
+				findPos = content.Find(SPACE_FLG, startPos);
+			}
 		}
 		
 		javaClass.parentClassName = content.Mid(startPos, findPos - startPos);
-		int contentLen = javaClass.parentClassName.GetLength();
+		contentLen = javaClass.parentClassName.GetLength();
 		if('{' == javaClass.parentClassName.GetAt(contentLen-1)){
 			javaClass.parentClassName = javaClass.parentClassName.Left(contentLen-1);
 			contentLen = javaClass.parentClassName.GetLength();
@@ -829,13 +841,8 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 		CString implementsStr;
 		const int cImplementsKeyLen = JAVA_FILE_IMPLEMENTS_KEY.GetLength();
 		startPos = findPos + cImplementsKeyLen;
-		findPos = content.Find(SPACE_FLG, startPos);
-		if(findPos < startPos){
-			findPos = content.GetLength();
-		}
-		//const CString COMMA_FLG				= ",";
-		const int commaLen = COMMA_FLG.GetLength();
-		CString implementsContent = content.Mid(startPos, findPos - startPos); //implements的全部内容
+		//从关键字开始截取，所有内容都保留下来
+		CString implementsContent = content.Mid(startPos); //implements的全部内容
 		implementsContent.Replace(SPACE_FLG, "");//清除里面的空格
 		int contentLen = implementsContent.GetLength();
 		if('{' == implementsContent.GetAt(contentLen-1)){
@@ -845,6 +852,7 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 
 		//开始通过“,”开分割多实现接口
 		startPos = 0;
+		const int commaLen = COMMA_FLG.GetLength();
 		findPos = implementsContent.Find(COMMA_FLG, startPos);
 		while(-1 < findPos){
 			implementsStr = implementsContent.Mid(startPos, findPos - startPos);
