@@ -6,7 +6,7 @@
 --------------------Configuration: RickToolKit - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPB7F8.tmp" with contents
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPAE9B.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/RickToolKit.pdb" /debug /machine:I386 /out:"Debug/RickToolKit.exe" /pdbtype:sept 
 .\Debug\AndroidManifestAnalyzer.obj
@@ -20,7 +20,7 @@ Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSPB7F8.tmp" with 
 .\Debug\XmlUtils.obj
 .\Debug\RickToolKit.res
 ]
-Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSPB7F8.tmp"
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSPAE9B.tmp"
 <h3>Output Window</h3>
 Linking...
 

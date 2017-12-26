@@ -216,7 +216,7 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	
 	vImprotClasseWhiteVec.clear();
 	vClearClassFileExceptPrefix.push_back("com.tws.plugin.aidl.PaceInfo");
-	//vClearClassFileExceptPrefix.push_back("com.tws.plugin.aidl.PaceInfo");
+	vClearClassFileExceptPrefix.push_back("com.tencent.tws.phoneside.cover.UriToPath");
 	//vClearClassFileExceptPrefix.push_back("TRom.E_ROM_TOKEN_TYPE");
 	//vClearClassFileExceptPrefix.push_back("OPT.E_QUBE_LANG");
 	//vClearClassFileExceptPrefix.push_back("com.tencent.tws.watchside.pay.wechat.rpc.IRPC"); //这个是模板类，暂时没做解析
