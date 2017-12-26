@@ -272,6 +272,13 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	jClass->className = GetFileNameWithoutSuffix(file);
 	jClass->className.TrimLeft();
 	jClass->className.TrimRight();
+
+	//debug
+	if("AlarmSettingActivity" == jClass->className){
+		int i = 0;
+		i += 2;
+		i = 4;
+	}
 	
 	bool isNote = false;
 	bool isPassPackage = false;
@@ -304,6 +311,9 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	bool isImportClass = false;
 	bool nextIsMayFullRef = false;
 	int lineLen = 0;
+
+	//对R的layout引用 REF_RESOURCE_FLG
+	bool isRefRes = false;
 	
 	int findPos = -1;
 	int startPos = 0;
@@ -312,6 +322,13 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	int strLen = 0;
 	while(readFile.ReadString(readLine)) {
 		++lineCount;
+		//debug
+		if(23 == lineCount){
+			int i = 0;
+			i += 2;
+			i = 4;
+		}
+
 		readLine.TrimLeft();
 		readLine.TrimRight();
 		if(readLine.IsEmpty()){
@@ -336,7 +353,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			if(-1 < findPos){
 				isNote = false;
 				startPos = findPos + cJavaNoteEndFlgLen;
-				if(startPos + 1 < readLine.GetLength()){
+				if(startPos + 1 < lineLen){
 					readLine = readLine.Mid(startPos); //后面还有内容，囧...
 					log.Format("文件：%s 行：%d 出现了多行注释后跟有代码的【不规范写法】", file, lineCount);
 					pLogUtils->w(log);
@@ -368,6 +385,8 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			continue;
 		}
 		
+		//注意 lineLen每次只在这里进行赋值
+		lineLen = readLine.GetLength();
 		//开始处理java内容块
 		
 		//先判断是否获取到了package
@@ -525,7 +544,14 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 					return;
 				}
 				
+				if(-1 < readLine.Find(REF_RESOURCE_FLG, 0)){
+					isRefRes = true;
+				}else{ //暂时都标志为true
+					isRefRes = true;
+				}
 				importClass = readLine.Mid(startPos, findPos - startPos);
+				importClass.Replace(SPACE_FLG, "");//清除里面的空格
+
 				jClass->vReferencedClass.push_back(importClass);
 				tmp = GetClassName(importClass);
 				importRefClases.push_back(tmp);
@@ -535,13 +561,40 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			}
 		}//if(!isPassClassName)
 		
-		
 		// debug
-		if(-1 < readLine.Find("com.tws.plugin.aidl.PaceInfo",0)){
+		if(-1 < readLine.Find("setContentView(",0)){
 			int idsfa = 0;
 			++idsfa;
 			idsfa += 2;
 		}
+		//先收集对资源Layout的引用,然后在遍历查找类引用
+		if(isRefRes){
+			findPos = readLine.Find(REF_RES_LAYOUT_FLG,0);
+			if(-1 < findPos){ //存在了对layout的引用,结束符一般只会是[; , )]3中
+				startPos = findPos + REF_RES_LAYOUT_FLG.GetLength();
+				int endPos = lineLen;
+				findPos = readLine.Find(COMMA_FLG,startPos);
+				if(-1 < findPos && findPos < endPos){
+					endPos = findPos;
+				}
+				
+				comparePos = readLine.Find(SEMICOLON_FLG,startPos);
+				if(-1 < comparePos && comparePos < endPos){
+					endPos = comparePos;
+				}
+				
+				int parenthesesPos = readLine.Find(")",startPos);
+				if(-1 < parenthesesPos && parenthesesPos < endPos){
+					endPos = parenthesesPos;
+				}
+				
+				tmp = readLine.Mid(startPos, endPos - startPos);
+				if(!dataIsExistInVector(tmp, jClass->vRefLayoutRes)){
+					jClass->vRefLayoutRes.push_back(tmp);
+				}
+			}
+		}
+
 		//收集类实现中的引用
 		////////////////////////////////////// 遍历readLine 获取内部引用到的类 //////////////////////////////////////////
 		//collectReferencedClass(readLine, *jClass);
@@ -556,7 +609,6 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		startPos = 0;
 		comparePos = 0;
 		findPos = -1;
-		lineLen = readLine.GetLength();
 		for(int index=0; index < lineLen; index++){
 			ch  = readLine.GetAt(index);
 			

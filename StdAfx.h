@@ -31,17 +31,17 @@ typedef struct{
 		usedCount = 0;
 		vReferencedClass.clear();
 		vImplementsInterfaces.clear();
-		vMethods.clear();
+		vRefLayoutRes.clear();
 		vReferencedClassEx.clear();
 	}
 	CString filePath;						//文件全路径
 	CString packageName;					//包名
-	vector<CString> vReferencedClass;		//引用的类【用于标记那些类在使用】
 	CString className;						//类名
 	CString parentClassName;				//父类
-	vector<CString> vImplementsInterfaces;	//实现的接口
-	vector<CString> vMethods;				//方法
-	vector<CString> vReferencedClassEx;		//引用的类 - 这里录入的是实现体内部的，没记录在import里面的
+	vector<CString> vImplementsInterfaces;	//实现了那些接口
+	vector<CString> vReferencedClass;		//import的类【用于标记那些类在使用】
+	vector<CString> vReferencedClassEx;		//内部引用的类 - 这里录入的是实现体内部的，没记录在import里面的
+	vector<CString> vRefLayoutRes;			//引用的layout资源
 	int usedCount;						//被引用的次数
 }JavaClass;
 
@@ -105,13 +105,16 @@ const CString JAVA_FILE_IMPROT_KEY	= "import ";
 const CString JAVA_FILE_CLASS_KEY	= " class ";
 const CString JAVA_FILE_CLASS_KEY_EX	= "class ";
 const CString JAVA_FILE_INTERFACE_KEY	= " interface ";
-const CString JAVA_FILE_EXTENDS_KEY	= "extends ";
-const CString JAVA_FILE_IMPLEMENTS_KEY	= "implements ";
-const CString PACKAGE_or_IMPROT_EDN_FLG = ";";
-const CString SPACE_FLG				= " ";
+const CString JAVA_FILE_EXTENDS_KEY		= "extends ";
+const CString JAVA_FILE_IMPLEMENTS_KEY		= "implements ";
+const CString PACKAGE_or_IMPROT_EDN_FLG		= ";";
+const CString SPACE_FLG						= " ";
+const CString REF_RESOURCE_FLG				= ".R;";
+const CString REF_RES_LAYOUT_FLG			= "R.layout.";
 const CString TEMPLATE_FLG_BEGIN	= "<";
 const CString TEMPLATE_FLG_END		= ">";
 const CString COMMA_FLG				= ",";
+const CString SEMICOLON_FLG			= ";";
 const CString DOT_FLG				= ".";
 const CString JAVA_CLASS_BODY_BEGIN = "{";
 
