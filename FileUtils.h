@@ -24,11 +24,14 @@ private:
 
 public:
 	CString analysisLazyClass(CString projectPath, CString additionalProjectPath="");
-
+	void setClearRedundantFiles(bool needClear);
 private:
 	LogUtils* pLogUtils;
 	FileAnalyzer* pFileAnalyzer;
 	FileAnalyzer* pSpecialFileAnalyzer;
+
+private:
+	bool mNeedClearRedundantFiles;
 };
 
 #endif // !defined(AFX_FILEUTILS_H__3E84A386_804E_4423_A9A0_C5064ED6AC17__INCLUDED_)

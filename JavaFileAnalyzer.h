@@ -43,6 +43,7 @@ private:
 	map<CString, CString> mClassCache;
 	map<CString, VECTOR> mProStructure;
 	vector<CString> vJavaKeys;
+	vector<CString> vClearClassFileExceptPrefix;
 
 	bool mForRes;
 	CString mRltDes;

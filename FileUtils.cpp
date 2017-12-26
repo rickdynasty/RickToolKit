@@ -22,6 +22,7 @@ FileUtils::FileUtils()
 {
 	pFileAnalyzer = NULL;
 	pLogUtils = new LogUtils();
+	mNeedClearRedundantFiles = false;
 }
 
 FileUtils::~FileUtils()
@@ -59,6 +60,11 @@ void FileUtils::createFileAnalyzer(const CString suffixFlg){
 	}
 }
 
+void FileUtils::setClearRedundantFiles(bool needClear)
+{ 
+	mNeedClearRedundantFiles = needClear;
+}
+
 CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProjectPath)
 {
 	if(projectPath.IsEmpty()){
@@ -77,6 +83,8 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 	}
 
 	((JavaFileAnalyzer*)pFileAnalyzer)->receiveAMFData(((AndroidManifestAnalyzer*)pSpecialFileAnalyzer)->getManifestReferenceds());
+	
+	pFileAnalyzer->setClearRedundantFiles(mNeedClearRedundantFiles);
 	pFileAnalyzer->printResult();
 	pSpecialFileAnalyzer->printResult();
 

@@ -49,6 +49,7 @@ void JavaFileAnalyzer::clear(){
 	mRltDes = ANALYSIS_RESULT_DEFAULT_DES;
 	mForRes = false;
 	pAMFData = NULL;
+	mClearRedundantFiles = false;
 }
 
 void JavaFileAnalyzer::closeOpenFile(){
@@ -74,7 +75,6 @@ void JavaFileAnalyzer::printResult(){
 		}
 	}
 
-
 	if(mAnalyzeRlt.size() < 1)
 		return;
 
@@ -93,15 +93,26 @@ void JavaFileAnalyzer::printResult(){
 	//打印结果
 	int count = 0;
 	iter = mAnalyzeRlt.begin();
+	CString className;
 	while(iter != mAnalyzeRlt.end())
 	{
+		className = iter->first;
 		count = iter->second.usedCount;
 		if(0 < count){
-			str.Format("类：%s 被引用了 %d 次", iter->first, count);
+			str.Format("类：%s 被引用了 %d 次", className, count);
 			pLogUtils->d(str);
 		} else {
-			str.Format("类：%s 被引用了 %d 次 file:%s", iter->first, count, iter->second.filePath);
+			str.Format("类：%s 被引用了 %d 次 file:%s", className, count, iter->second.filePath);
 			pLogUtils->e(str);
+			
+			if(mClearRedundantFiles){
+				if(exceptPrefixInVector(className, vClearClassFileExceptPrefix)){
+					//白名单内容，不需要清理
+				} else{
+					//冗余文件，直接delete
+					//Write Code here ^
+				}
+			}
 		}
 
 		iter++;
@@ -167,8 +178,7 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	vJavaKeys.push_back("Class");
 	vJavaKeys.push_back("ClassLoader");
 	vJavaKeys.push_back("Boolean");
-	vJavaKeys.push_back("Throwable");
-	
+	vJavaKeys.push_back("Throwable");	
 	vJavaKeys.push_back("IllegalArgumentException");
 	vJavaKeys.push_back("CloneNotSupportedException");
 	vJavaKeys.push_back("InterruptedException");
@@ -184,6 +194,10 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	vJavaKeys.push_back("IllegalStateException");
 	vJavaKeys.push_back("NumberFormatException");
 	vJavaKeys.push_back("InstantiationException");
+
+	vClearClassFileExceptPrefix.clear();
+	vClearClassFileExceptPrefix.push_back("com.tencent.tws.sharelib.");
+	vClearClassFileExceptPrefix.push_back("qrom.component.config.");
 
 	CString fileName,filePath;
 	CFileFind fileFind;

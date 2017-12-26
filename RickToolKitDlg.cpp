@@ -212,6 +212,7 @@ void CRickToolKitDlg::OnBtnAnalysisLazyClass()
 		pAnalyzeStatic = (CEdit*)GetDlgItem(IDC_ANALYZER_STATIC_DES);
 	}
 	pAnalyzeStatic->SetWindowText(mAnalyzeingDes);
+	pFileUtils->setClearRedundantFiles(1 == ((CButton*)GetDlgItem(IDC_CHECK_CLEAR_REDUNDANT_FILE))->GetCheck());
 
 	MessageBox(pFileUtils->analysisLazyClass(mPath));
 	pAnalyzeStatic->SetWindowText(mAnalyzeDefaultDes);

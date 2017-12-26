@@ -109,3 +109,16 @@ bool dataIsExistInVector(const CString &data, const vector<CString> &vValues){
 	
 	return false;
 }
+
+bool exceptPrefixInVector(const CString &data, const vector<CString> &vValues){
+	int vectorSize = vValues.size();
+	CString value;
+	for(int index = 0; index < vectorSize; index++){
+		value = vValues[index];
+		if(0 == data.Find(value, 0)){
+			return true;
+		}
+	}
+	
+	return false;
+}

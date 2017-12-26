@@ -19,6 +19,7 @@ public:
 protected:
 	CString mSuffix;
 	LogUtils* pLogUtils;
+	bool mClearRedundantFiles;
 	
 public:
     virtual void analyzerFile(const CString file) = 0;
@@ -29,6 +30,7 @@ public:
 	virtual CString getSuffix(){ return mSuffix;}
 	virtual void closeOpenFile() = 0;
 	void setLogUtils(LogUtils* logUtils){ pLogUtils = logUtils;}
+	void setClearRedundantFiles(bool needClear){ mClearRedundantFiles = needClear;}
 };
 
 #endif // !defined(AFX_FILEANALYZER_H__91661F81_F3AF_4935_9567_BA937E188B06__INCLUDED_)

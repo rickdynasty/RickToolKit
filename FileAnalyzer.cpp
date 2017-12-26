@@ -19,6 +19,7 @@ static char THIS_FILE[]=__FILE__;
 FileAnalyzer::FileAnalyzer()
 {
 	mSuffix = "";
+	mClearRedundantFiles = false;
 }
 
 FileAnalyzer::~FileAnalyzer()
