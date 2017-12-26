@@ -125,10 +125,6 @@ SOURCE=.\RickToolKitDlg.cpp
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
-# Begin Source File
-
-SOURCE=.\XmlUtils.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -169,10 +165,7 @@ SOURCE=.\RickToolKitDlg.h
 
 SOURCE=.\StdAfx.h
 # End Source File
-# Begin Source File
 
-SOURCE=.\XmlUtils.h
-# End Source File
 # End Group
 # Begin Group "Resource Files"
 
