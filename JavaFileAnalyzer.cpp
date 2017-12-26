@@ -102,7 +102,7 @@ void JavaFileAnalyzer::printResult(){
 			str.Format("类：%s 被引用了 %d 次", className, count);
 			pLogUtils->d(str);
 		} else {
-			str.Format("类：%s 被引用了 %d 次 file:%s", className, count, iter->second.filePath);
+			str.Format("类：%s 被引用了 %d 次 file:%s |直接清理", className, count, iter->second.filePath);
 			pLogUtils->e(str);
 			
 			if(mClearRedundantFiles){
@@ -110,7 +110,7 @@ void JavaFileAnalyzer::printResult(){
 					//白名单内容，不需要清理
 				} else{
 					//冗余文件，直接delete
-					//Write Code here ^
+					::DeleteFile(iter->second.filePath);
 				}
 			}
 		}
