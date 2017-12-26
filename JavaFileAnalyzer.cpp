@@ -215,7 +215,7 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	vClearClassFileExceptPrefix.push_back("com.tencent.tws.assistant.");
 	
 	vImprotClasseWhiteVec.clear();
-	//vClearClassFileExceptPrefix.push_back("com.tencent.tws.proto.DeviceInfo");
+	vClearClassFileExceptPrefix.push_back("com.tws.plugin.aidl.PaceInfo");
 	//vClearClassFileExceptPrefix.push_back("com.tws.plugin.aidl.PaceInfo");
 	//vClearClassFileExceptPrefix.push_back("TRom.E_ROM_TOKEN_TYPE");
 	//vClearClassFileExceptPrefix.push_back("OPT.E_QUBE_LANG");
@@ -281,7 +281,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	JavaClass* jClass = new JavaClass();
 	jClass->init();
 	jClass->filePath = file;
-	jClass->className = GetFileNameWithoutSuffix(file);	
+	jClass->className = GetFileNameWithoutSuffix(file);
 	jClass->className.TrimLeft();
 	jClass->className.TrimRight();
 	
@@ -549,7 +549,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 		
 		
 		// debug
-		if(-1 < readLine.Find("com.tencent.tws.proto.DeviceInfo",0)){
+		if(-1 < readLine.Find("com.tws.plugin.aidl.PaceInfo",0)){
 			int idsfa = 0;
 			++idsfa;
 			idsfa += 2;
@@ -801,6 +801,12 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 		}
 		
 		javaClass.parentClassName = content.Mid(startPos, findPos - startPos);
+		int contentLen = javaClass.parentClassName.GetLength();
+		if('{' == javaClass.parentClassName.GetAt(contentLen-1)){
+			javaClass.parentClassName = javaClass.parentClassName.Left(contentLen-1);
+			contentLen = javaClass.parentClassName.GetLength();
+		}
+
 		if(-1 < (tmplatePos = javaClass.parentClassName.Find(TEMPLATE_FLG_BEGIN, 0))){
 			javaClass.parentClassName = javaClass.parentClassName.Left(tmplatePos);
 		}
@@ -831,6 +837,12 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 		const int commaLen = COMMA_FLG.GetLength();
 		CString implementsContent = content.Mid(startPos, findPos - startPos); //implements的全部内容
 		implementsContent.Replace(SPACE_FLG, "");//清除里面的空格
+		int contentLen = implementsContent.GetLength();
+		if('{' == implementsContent.GetAt(contentLen-1)){
+			implementsContent = implementsContent.Left(contentLen-1);
+			contentLen = implementsContent.GetLength();
+		}
+
 		//开始通过“,”开分割多实现接口
 		startPos = 0;
 		findPos = implementsContent.Find(COMMA_FLG, startPos);
