@@ -30,10 +30,6 @@ void JavaFileAnalyzer::setForRes(bool forRes){
 	mForRes = forRes;
 }
 
-void JavaFileAnalyzer::setSuffix(CString suffix){
-	mSuffix = suffix;
-}
-
 void JavaFileAnalyzer::clear(){
 	mAnalyzeRlt.clear();
 	mClassCache.clear();
@@ -200,7 +196,7 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	vClearClassFileExceptPrefix.clear();
 	vClearClassFileExceptPrefix.push_back("com.tencent.tws.sharelib.");
 	vClearClassFileExceptPrefix.push_back("qrom.component.config.");
-	vClearClassFileExceptPrefix.push_back("com.tencent.tws.assistant.");
+	//vClearClassFileExceptPrefix.push_back("com.tencent.tws.assistant.");
 	
 	vImprotClasseWhiteVec.clear();
 	vClearClassFileExceptPrefix.push_back("com.tws.plugin.aidl.PaceInfo");
@@ -928,7 +924,7 @@ void JavaFileAnalyzer::dillClassInheritanceRelationship(CString content, JavaCla
 	}
 }
 
-void JavaFileAnalyzer::receiveAMFData(vector<XML_REF_STRUCT> refDate){
+void JavaFileAnalyzer::receiveRefDatas(vector<XML_REF_STRUCT> refDate){
 	CString str;
 	for(int i = 0; i < refDate.size(); i++){
 		for(int index=0; index < refDate[i].vReferencedClass.size();index++)

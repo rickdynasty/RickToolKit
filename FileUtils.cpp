@@ -6,6 +6,7 @@
 #include "RickToolKit.h"
 #include "FileUtils.h"
 #include "JavaFileAnalyzer.h"
+#include "XmlFileAnalyzer.h"
 #include "AndroidManifestAnalyzer.h"
 
 #ifdef _DEBUG
@@ -21,6 +22,9 @@ static char THIS_FILE[]=__FILE__;
 FileUtils::FileUtils()
 {
 	pFileAnalyzer = NULL;
+	pSpecialFileAnalyzer = NULL;
+	pResFileAnalyzer = NULL;
+
 	pLogUtils = new LogUtils();
 	mNeedClearRedundantFiles = false;
 }
@@ -37,11 +41,15 @@ void FileUtils::recycleFileAnalyzer(){
 		pFileAnalyzer = NULL;
 	}
 
-	//暂时不清楚为啥不能delete
-	//if(NULL != pSpecialFileAnalyzer){
-	//	delete pSpecialFileAnalyzer;
-	//	pSpecialFileAnalyzer = NULL;
-	//}
+	if(NULL != pSpecialFileAnalyzer){
+		delete pSpecialFileAnalyzer;
+		pSpecialFileAnalyzer = NULL;
+	}
+
+	if(NULL != pResFileAnalyzer){
+		delete pResFileAnalyzer;
+		pResFileAnalyzer = NULL;
+	}
 }
 
 void FileUtils::recycleLogUtils(){
@@ -59,19 +67,18 @@ void FileUtils::createFileAnalyzer(const CString suffixFlg){
 	
 	recycleFileAnalyzer();
 	
-	if(suffixFlg == SUFFIX_JAVA){
-		pFileAnalyzer = new JavaFileAnalyzer();
-		pFileAnalyzer->setSuffix(SUFFIX_JAVA);
-		pFileAnalyzer->setLogUtils(pLogUtils);
+	pFileAnalyzer = new JavaFileAnalyzer();
+	pFileAnalyzer->setSuffix(SUFFIX_JAVA);
+	pFileAnalyzer->setLogUtils(pLogUtils);
 
-		pSpecialFileAnalyzer = new AndroidManifestAnalyzer();
-		pSpecialFileAnalyzer->setSuffix(SUFFIX_XML);
-		pSpecialFileAnalyzer->setLogUtils(pLogUtils);
-	}else if(suffixFlg == SUFFIX_XML){	//xml的解析器，write later
-		recycleFileAnalyzer();
-	} else{								//其他类型的暂时没处理
-		recycleFileAnalyzer();
-	}
+	//xml的解析器，write later		
+	pResFileAnalyzer = new XmlFileAnalyzer();
+	pResFileAnalyzer->setSuffix(SUFFIX_XML);
+	pResFileAnalyzer->setLogUtils(pLogUtils);
+	
+	pSpecialFileAnalyzer = new AndroidManifestAnalyzer();
+	pSpecialFileAnalyzer->setSuffix(SUFFIX_XML);
+	pSpecialFileAnalyzer->setLogUtils(pLogUtils);
 }
 
 void FileUtils::setClearRedundantFiles(bool needClear)
@@ -96,7 +103,8 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 		scanFolderForSuffix(additionalProjectPath, SUFFIX_JAVA);
 	}
 
-	((JavaFileAnalyzer*)pFileAnalyzer)->receiveAMFData(((AndroidManifestAnalyzer*)pSpecialFileAnalyzer)->getManifestReferenceds());
+	((JavaFileAnalyzer*)pFileAnalyzer)->receiveRefDatas(((AndroidManifestAnalyzer*)pSpecialFileAnalyzer)->getManifestRefClasses());
+	((JavaFileAnalyzer*)pFileAnalyzer)->receiveRefDatas(((XmlFileAnalyzer*)pSpecialFileAnalyzer)->getLayoutRefClasses());
 	
 	pFileAnalyzer->setClearRedundantFiles(mNeedClearRedundantFiles);
 	pFileAnalyzer->printResult();
@@ -129,6 +137,11 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 			if("build" == fileName || "gradle" == fileName || '.' == fileName.GetAt(0) || "Log" == fileName){
 				continue;
 			}
+
+			if("res" == fileName){
+				scanFolderForLayout(filePath);
+				continue;
+			}
 			
 			scanFolderForSuffix(filePath, targetSuffix);
 			continue;
@@ -140,6 +153,42 @@ void FileUtils::scanFolderForSuffix(CString folder, const CString targetSuffix){
 			pFileAnalyzer->analyzerFile(filePath);
 		}else if(FILE_ANDROID_MANIFEST == fileName){
 			pSpecialFileAnalyzer->analyzerFile(filePath);
+		} else {
+			continue;//不是目标文件，直接略过...
+		}
+	}
+	
+	fileFind.Close();
+}
+
+void FileUtils::scanFolderForLayout(CString folder){
+	CString fileName,filePath;
+	CFileFind fileFind;
+	BOOL hasFind = fileFind.FindFile(folder+"\\*.*");
+	const CString targetSuffix = SUFFIX_XML;
+	while(hasFind)  
+	{
+		hasFind = fileFind.FindNextFile();  
+		if(fileFind.IsDots())
+			continue;
+		
+		filePath = fileFind.GetFilePath();
+		fileName = fileFind.GetFileName();
+
+		if(fileFind.IsDirectory()){
+			//这里过滤掉不是layout*的文件夹
+			if(0 != fileName.Find("layout",0)){
+				continue;
+			}
+			
+			scanFolderForLayout(filePath);
+			continue;
+		}
+		
+		if(targetSuffix == GetFileSuffix(fileName)){
+			//扫描到了目标文件
+			//Write code here^
+			((XmlFileAnalyzer*)pResFileAnalyzer)->collectRefClasses(filePath);
 		} else {
 			continue;//不是目标文件，直接略过...
 		}

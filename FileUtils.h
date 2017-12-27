@@ -19,6 +19,7 @@ public:
 
 private:
 	void scanFolderForSuffix(CString folder, const CString targetSuffix);
+	void scanFolderForLayout(CString folder);
 	void createFileAnalyzer(const CString suffixFlg);
 	void recycleFileAnalyzer();
 	void recycleLogUtils();
@@ -30,6 +31,7 @@ private:
 	LogUtils* pLogUtils;
 	FileAnalyzer* pFileAnalyzer;
 	FileAnalyzer* pSpecialFileAnalyzer;
+	FileAnalyzer* pResFileAnalyzer;
 
 private:
 	bool mNeedClearRedundantFiles;

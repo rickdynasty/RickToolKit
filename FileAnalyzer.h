@@ -23,7 +23,7 @@ protected:
 	
 public:
     virtual void analyzerFile(const CString file) = 0;
-	virtual void setSuffix(CString suffix) = 0;
+	virtual void setSuffix(CString suffix){ mSuffix = suffix; }
 	virtual void clear() = 0;
 	virtual void printResult() = 0;
 	virtual CString getAnalyzerRltDes(){ return ANALYSIS_RESULT_DEFAULT_DES;}

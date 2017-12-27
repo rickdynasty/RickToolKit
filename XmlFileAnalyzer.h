@@ -20,12 +20,19 @@ class XmlFileAnalyzer : public FileAnalyzer
 public:
 	XmlFileAnalyzer();
 	virtual ~XmlFileAnalyzer();
-	virtual void setSuffix(CString suffix);
+	
 	virtual void clear();
 	void setForRes(bool forRes);
 	virtual void printResult();	//´òÓ¡½á¹û
 	virtual CString getAnalyzerRltDes();
+    virtual void analyzerFile(const CString file);
 
+public:
+	void collectRefClasses(const CString file);
+	const vector<XML_REF_STRUCT> getLayoutRefClasses();
+
+private:
+	vector<XML_REF_STRUCT> mLayoutRefClasses;
 };
 
 #endif // !defined(AFX_XMLFILEANALYZER_H__B27EF3AE_D040_4DBE_AE25_906D06016D8A__INCLUDED_)

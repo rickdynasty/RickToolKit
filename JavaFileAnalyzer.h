@@ -23,7 +23,6 @@ public:
 	virtual ~JavaFileAnalyzer();
 
     virtual void analyzerFile(const CString file);
-	virtual void setSuffix(CString suffix);
 	virtual void clear();
 	void setForRes(bool forRes);
 	virtual void printResult();	//´òÓ¡½á¹û
@@ -34,7 +33,7 @@ private:
 	void scanReferencedClassVector(JavaClass& javaClass);
 
 public:
-	void receiveAMFData(vector<XML_REF_STRUCT> refDate);
+	void receiveRefDatas(vector<XML_REF_STRUCT> refDate);
 	void getProDirStructure(CString folder);
 
 private:

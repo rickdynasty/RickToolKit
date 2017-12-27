@@ -26,14 +26,9 @@ AndroidManifestAnalyzer::~AndroidManifestAnalyzer()
 	
 }
 
-void AndroidManifestAnalyzer::setSuffix(CString suffix)
-{
-	mSuffix = suffix;
-}
-
 void AndroidManifestAnalyzer::clear()
 {
-	mManifestReferenceds.clear();;
+	mManifestRefClasses.clear();
 }
 
 void AndroidManifestAnalyzer::setForRes(bool forRes)
@@ -43,11 +38,11 @@ void AndroidManifestAnalyzer::setForRes(bool forRes)
 
 void AndroidManifestAnalyzer::printResult()	//´òÓ¡½á¹û
 {
-	for(int i = 0; i < mManifestReferenceds.size(); i++){
-		pLogUtils->i("[Project:"+ mManifestReferenceds[i].key);
-		for(int index=0; index < mManifestReferenceds[i].vReferencedClass.size();index++)
+	for(int i = 0; i < mManifestRefClasses.size(); i++){
+		pLogUtils->i("[Project:"+ mManifestRefClasses[i].key);
+		for(int index=0; index < mManifestRefClasses[i].vReferencedClass.size();index++)
 		{
-			pLogUtils->i(LINE_TABLE + mManifestReferenceds[i].vReferencedClass[index]);
+			pLogUtils->i(LINE_TABLE + mManifestRefClasses[i].vReferencedClass[index]);
 		}
 		pLogUtils->i(LINE_BREAK);	
 	}
@@ -290,7 +285,7 @@ void AndroidManifestAnalyzer::analyzerFile(const CString file){
 		}//if(!isComponent)
 	}//while(readFile.ReadString(readLine))
 
-	mManifestReferenceds.push_back(referencedClass);
+	mManifestRefClasses.push_back(referencedClass);
 	
 	readFile.Close();
 }
@@ -306,6 +301,6 @@ void AndroidManifestAnalyzer::push_back(CString ref, XML_REF_STRUCT& value){
 	value.vReferencedClass.push_back(ref);
 }
 
-const vector<XML_REF_STRUCT> AndroidManifestAnalyzer::getManifestReferenceds(){
-	return mManifestReferenceds;
+const vector<XML_REF_STRUCT> AndroidManifestAnalyzer::getManifestRefClasses(){
+	return mManifestRefClasses;
 }

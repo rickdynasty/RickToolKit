@@ -85,10 +85,12 @@ const CString XML_NOTE_FLG_END ="-->";
 const CString MANIFEST_BEGIN	= "<manifest ";
 const CString MANIFEST_END		= "</manifest>";
 const CString XML_FILE_KEY_PACKAGE		= "package=\"";
-const CString QUOTATION_MARK	= "\"";	//双引号 - 赋值标识符
-const CString XML_DECLARATION_BEGIN="<?xml";
-const CString XML_DECLARATION_END="?>";
-const CString XML_CONTENT_END="/>";
+const CString QUOTATION_MARK		= "\"";	//双引号 - 赋值标识符
+const CString XML_DECLARATION_BEGIN	="<?xml";
+const CString XML_DECLARATION_END	="?>";
+const CString XML_CONTENT_END		="/>";
+const CString XML_LAYOUT_HEAD_FLG	=" xmlns:android=";
+const CString XML_ITEM_BEGIN_FLG	="<";
 
 const CString MANIFEST_APPLICATION_BEGIN = "<application";
 const CString MANIFEST_ACTIVITY_BEGIN = "<activity";
