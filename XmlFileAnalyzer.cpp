@@ -31,7 +31,14 @@ void XmlFileAnalyzer::setForRes(bool forRes)
 
 void XmlFileAnalyzer::printResult()	//打印结果
 {
-	
+	for(int i = 0; i < mLayoutRefClasses.size(); i++){
+		pLogUtils->i("[xml文件:"+ mLayoutRefClasses[i].key);
+		for(int index=0; index < mLayoutRefClasses[i].vReferencedClass.size();index++)
+		{
+			pLogUtils->i(LINE_TABLE + mLayoutRefClasses[i].vReferencedClass[index]);
+		}
+		pLogUtils->i(LINE_BREAK);	
+	}
 }
 
 CString XmlFileAnalyzer::getAnalyzerRltDes()
@@ -72,6 +79,13 @@ void XmlFileAnalyzer::collectRefClasses(const CString file){
 	referencedClass.key = GetFileNameWithoutSuffix(file);
 	referencedClass.key.TrimLeft();
 	referencedClass.key.TrimRight();
+
+	//debug
+	if("content_action_bar" == referencedClass.key){
+		int i = 0;
+		i += 2;
+		i = 4;
+	}
 	
 	CString readLine,log, refClass;
 	int findPos = -1;
@@ -79,6 +93,7 @@ void XmlFileAnalyzer::collectRefClasses(const CString file){
 	int comparePos = -1;
 	int lineCount = 0;
 	int lineLen = 0;
+	char ch;
 	while(readFile.ReadString(readLine)) {
 		++lineCount;		
 		readLine.TrimLeft();
@@ -138,6 +153,13 @@ void XmlFileAnalyzer::collectRefClasses(const CString file){
 		}
 
 		startPos = findPos + XML_ITEM_BEGIN_FLG.GetLength();
+		if(startPos < lineLen){
+			ch = readLine.GetAt(startPos);
+			if('/' == ch){
+				continue;
+			}
+		}
+
 		findPos = readLine.Find(SPACE_FLG,startPos);
 		if(findPos < startPos){
 			findPos = lineLen;
@@ -173,8 +195,9 @@ void XmlFileAnalyzer::collectRefClasses(const CString file){
 		//refClass
 
 	}//while(readFile.ReadString(readLine))
-
-	mLayoutRefClasses.push_back(referencedClass);
 	
+	if(0 < referencedClass.vReferencedClass.size()){
+		mLayoutRefClasses.push_back(referencedClass);
+	}
 	readFile.Close();
 }

@@ -104,11 +104,12 @@ CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProj
 	}
 
 	((JavaFileAnalyzer*)pFileAnalyzer)->receiveRefDatas(((AndroidManifestAnalyzer*)pSpecialFileAnalyzer)->getManifestRefClasses());
-	((JavaFileAnalyzer*)pFileAnalyzer)->receiveRefDatas(((XmlFileAnalyzer*)pSpecialFileAnalyzer)->getLayoutRefClasses());
+	((JavaFileAnalyzer*)pFileAnalyzer)->receiveRefDatas(((XmlFileAnalyzer*)pResFileAnalyzer)->getLayoutRefClasses());
 	
 	pFileAnalyzer->setClearRedundantFiles(mNeedClearRedundantFiles);
 	pFileAnalyzer->printResult();
 	pSpecialFileAnalyzer->printResult();
+	pResFileAnalyzer->printResult();
 
 	CString analyzerRlt = pFileAnalyzer->getAnalyzerRltDes();
 	

@@ -270,7 +270,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	jClass->className.TrimRight();
 
 	//debug
-	if("AlarmSettingActivity" == jClass->className){
+	if("TwsActionBarLinearLayout" == jClass->className){
 		int i = 0;
 		i += 2;
 		i = 4;
@@ -319,7 +319,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	while(readFile.ReadString(readLine)) {
 		++lineCount;
 		//debug
-		if(23 == lineCount){
+		if(35 == lineCount || 232 == lineCount){
 			int i = 0;
 			i += 2;
 			i = 4;
@@ -929,7 +929,19 @@ void JavaFileAnalyzer::receiveRefDatas(vector<XML_REF_STRUCT> refDate){
 	for(int i = 0; i < refDate.size(); i++){
 		for(int index=0; index < refDate[i].vReferencedClass.size();index++)
 		{
+			//debug
+			if("content_action_bar" == refDate[i].key){
+				int i = 0;
+				i +=3;
+				i = 5;
+			}
 			str = refDate[i].vReferencedClass[index];
+			//debug
+			if(-1 < str.Find("android.widget.")){
+				int i = 0;
+				i +=3;
+				i = 5;
+			}
 			
 			int keyCount = mAnalyzeRlt.count(str);
 			if(0 < keyCount){
