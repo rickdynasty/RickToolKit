@@ -122,7 +122,7 @@ BOOL CRickToolKitDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	pFileUtils = new FileUtils();
 
-	mPath = "D:\\_Anima\\pacewear_app_reconstruction";
+	mPath = "D:\\_Anima\\pacewear_app";
 
 	mAnalyzeDefaultDes = "←点击开始分析";
 	mAnalyzeingDes = "分析中...";

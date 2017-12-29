@@ -35,6 +35,7 @@ private:
 public:
 	void receiveRefDatas(vector<XML_REF_STRUCT> refDate);
 	void getProDirStructure(CString folder);
+	void initFilter();
 
 private:
 	map<CString, JavaClass> mAnalyzeRlt;

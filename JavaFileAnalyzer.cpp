@@ -168,7 +168,8 @@ CString JavaFileAnalyzer::getAnalyzerRltDes(){
 	return mRltDes;
 }
 
-void JavaFileAnalyzer::getProDirStructure(CString folder){
+void JavaFileAnalyzer::initFilter()
+{
 	vJavaKeys.clear();
 	vJavaKeys.push_back("String");
 	vJavaKeys.push_back("Object");
@@ -205,7 +206,9 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 	//vClearClassFileExceptPrefix.push_back("OPT.E_QUBE_LANG");
 	//vClearClassFileExceptPrefix.push_back("com.tencent.tws.watchside.pay.wechat.rpc.IRPC"); //这个是模板类，暂时没做解析
 	//vClearClassFileExceptPrefix.push_back("com.airbnb.lottie.BaseAnimatableValue"); //这个是模板类，暂时没做解析
-	
+}
+
+void JavaFileAnalyzer::getProDirStructure(CString folder){
 	CString fileName,filePath;
 	CFileFind fileFind;
 	BOOL hasFind = fileFind.FindFile(folder+"\\*.*");
@@ -221,7 +224,6 @@ void JavaFileAnalyzer::getProDirStructure(CString folder){
 		
 		filePath = fileFind.GetFilePath();
 		fileName = fileFind.GetFileName();
-		
 		if(fileFind.IsDirectory()){
 			//这里过滤掉 配置&缓存文件夹：.git .gradle 输出等
 			if("build" == fileName || "gradle" == fileName || '.' == fileName.GetAt(0) || "Log" == fileName || "assets" == fileName || "libs" == fileName || "res" == fileName){
@@ -411,7 +413,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				mapKey = jClass->className;
 				if(0 < mClassCache.count(mapKey)){
 					//已经存在这个class名称的类
-					log.Format("类：%s 在文件：\t%s \t已经存在于[file:\n\t\t\t\t\t\t%s]", mapKey, file, mClassCache[mapKey]);
+					log.Format("类：%s 在文件：\n\t\t\t\t\t%s \t已经存在于[file:\n\t\t\t\t\t%s]", mapKey, file, mClassCache[mapKey]);
 					pLogUtils->p(log);
 				} else {
 					mClassCache.insert(pair<CString, CString>(mapKey, jClass->filePath));
