@@ -333,11 +333,14 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			continue;
 		}
 		
+		//注意 lineLen是readLine的长度，如果内容变了需要重新赋值
+		lineLen = readLine.GetLength();
 		//处理单行 注释的情况 
 		findPos = readLine.Find(JAVA_NOTE_ONELINE_FLG,0);
 		if(-1 < findPos){
 			if(findPos != 0){
 				readLine = readLine.Left(findPos);
+				lineLen = readLine.GetLength();
 			}
 			else{
 				continue;
@@ -353,6 +356,7 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 				startPos = findPos + cJavaNoteEndFlgLen;
 				if(startPos + 1 < lineLen){
 					readLine = readLine.Mid(startPos); //后面还有内容，囧...
+					lineLen = readLine.GetLength();
 					log.Format("文件：%s 行：%d 出现了多行注释后跟有代码的【不规范写法】", file, lineCount);
 					pLogUtils->w(log);
 				}
@@ -383,8 +387,6 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			continue;
 		}
 		
-		//注意 lineLen每次只在这里进行赋值
-		lineLen = readLine.GetLength();
 		//开始处理java内容块
 		
 		//先判断是否获取到了package
