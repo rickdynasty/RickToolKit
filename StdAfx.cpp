@@ -110,6 +110,9 @@ bool dataIsExistInVector(const CString &data, const vector<CString> &vValues){
 	return false;
 }
 
+/**
+ * Ç°×ºÅÐ¶Ï
+ */
 bool exceptPrefixInVector(const CString &data, const vector<CString> &vValues){
 	int vectorSize = vValues.size();
 	CString value;

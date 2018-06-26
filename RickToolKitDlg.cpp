@@ -122,7 +122,7 @@ BOOL CRickToolKitDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	pFileUtils = new FileUtils();
 
-	mPath = "D:\\_Anima\\pacewear_app";
+	mPath = "D:\\workspace\\MobileOfficeGovForTemp";
 
 	mAnalyzeDefaultDes = "←点击开始分析";
 	mAnalyzeingDes = "分析中...";
@@ -204,17 +204,23 @@ void CRickToolKitDlg::OnBtnChoosePath()
 //开始分析冗余类
 void CRickToolKitDlg::OnBtnAnalysisLazyClass() 
 {
+	// 构造pFileUtils
 	if(NULL == pFileUtils){
 		pFileUtils = new FileUtils();
 	}
 	
+	// 操作提示语
 	if(NULL == pAnalyzeStatic){
 		pAnalyzeStatic = (CEdit*)GetDlgItem(IDC_ANALYZER_STATIC_DES);
 	}
 	pAnalyzeStatic->SetWindowText(mAnalyzeingDes);
+	// 是否直接清理掉冗余资源
 	pFileUtils->setClearRedundantFiles(1 == ((CButton*)GetDlgItem(IDC_CHECK_CLEAR_REDUNDANT_FILE))->GetCheck());
 
+	//开始分析，并在分析结束后提示结果
 	MessageBox(pFileUtils->analysisLazyClass(mPath));
+	
+	//更新提示语为扫描结果
 	pAnalyzeStatic->SetWindowText(mAnalyzeDefaultDes);
 }
 

@@ -86,19 +86,27 @@ void FileUtils::setClearRedundantFiles(bool needClear)
 	mNeedClearRedundantFiles = needClear;
 }
 
+/**
+ * 开始扫描类文件
+ */
 CString FileUtils::analysisLazyClass(CString projectPath, CString additionalProjectPath)
 {
 	if(projectPath.IsEmpty()){
 		return "空文件路径，o(╯□╰)o请先选择有效的工程目录...";
 	}
 	
+	//构建 java文件分析器
 	createFileAnalyzer(SUFFIX_JAVA);
+	//初始清空
 	pFileAnalyzer->clear();
 	pSpecialFileAnalyzer->clear();
 
+	//初始过滤器【java 关键字、】
 	((JavaFileAnalyzer*)pFileAnalyzer)->initFilter();
+	// 以folder作为key,将folder下面的目标文件vector<filepath>储存起来
 	((JavaFileAnalyzer*)pFileAnalyzer)->getProDirStructure(projectPath);
 
+	//开始扫描
 	scanFolderForSuffix(projectPath, SUFFIX_JAVA);
 	if(!additionalProjectPath.IsEmpty()){
 		scanFolderForSuffix(additionalProjectPath, SUFFIX_JAVA);
