@@ -86,6 +86,10 @@ void FileUtils::setClearRedundantFiles(bool needClear)
 	mNeedClearRedundantFiles = needClear;
 }
 
+void FileUtils::saveRouteClass(bool saveRouteClass){
+	mNeedSaveRouteClass = saveRouteClass;
+}
+
 /**
  * 开始扫描类文件
  */

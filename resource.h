@@ -20,6 +20,7 @@
 #define IDC_CHECK4                      1010
 #define IDC_CHECK5                      1011
 #define IDC_CHECK6                      1012
+#define IDC_CHECK_SAVE_ROUTE_CLASS      1012
 #define IDC_EXPAND_DOWNWARD             1013
 
 // Next default values for new objects

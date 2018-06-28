@@ -216,6 +216,7 @@ void CRickToolKitDlg::OnBtnAnalysisLazyClass()
 	pAnalyzeStatic->SetWindowText(mAnalyzeingDes);
 	// 是否直接清理掉冗余资源
 	pFileUtils->setClearRedundantFiles(1 == ((CButton*)GetDlgItem(IDC_CHECK_CLEAR_REDUNDANT_FILE))->GetCheck());
+	pFileUtils->saveRouteClass(1== ((CButton*)GetDlgItem(IDC_CHECK_SAVE_ROUTE_CLASS))->GetCheck());
 
 	//开始分析，并在分析结束后提示结果
 	MessageBox(pFileUtils->analysisLazyClass(mPath));

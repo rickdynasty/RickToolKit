@@ -38,13 +38,19 @@ public:
 	void initFilter();
 
 private:
+	// 分析结果<类全名，结果结构体>
 	map<CString, JavaClass> mAnalyzeRlt;
+	//类与文件路径的cache，方便统计同类
 	map<CString, CString> mClassCache;
+	//《文件夹，文件夹下面的类》
 	map<CString, VECTOR> mProStructure;
+	// java关键字
 	vector<CString> vJavaKeys;
+
+	//白名单类【前缀匹配】
 	vector<CString> vClearClassFileExceptPrefix;
 
-	
+	//白名单【类全名】(暂空)
 	vector<CString> vImprotClasseWhiteVec;
 
 	bool mForRes;

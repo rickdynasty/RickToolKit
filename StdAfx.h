@@ -29,6 +29,7 @@ const string JavaNewKey = "new";
 typedef struct{
 	void init(){
 		usedCount = 0;
+		mIsRouteClass = false;
 		vReferencedClass.clear();
 		vImplementsInterfaces.clear();
 		vRefLayoutRes.clear();
@@ -43,6 +44,8 @@ typedef struct{
 	vector<CString> vReferencedClassEx;		//内部引用的类 - 这里录入的是实现体内部的，没记录在import里面的
 	vector<CString> vRefLayoutRes;			//引用的layout资源
 	int usedCount;						//被引用的次数
+	
+	bool mIsRouteClass;						//是否是route类
 }JavaClass;
 
 typedef struct{
@@ -108,7 +111,8 @@ const CString JAVA_FILE_CLASS_KEY	= " class ";
 const CString JAVA_FILE_CLASS_KEY_EX	= "class ";
 const CString JAVA_FILE_INTERFACE_KEY	= " interface ";
 const CString JAVA_FILE_EXTENDS_KEY		= "extends ";
-const CString JAVA_FILE_IMPLEMENTS_KEY		= "implements ";
+const CString JAVA_FILE_IMPLEMENTS_KEY	= "implements ";
+const CString JAVA_FILE_ROUTE_KEY		= "@Route(";
 const CString PACKAGE_or_IMPROT_EDN_FLG		= ";";
 const CString SPACE_FLG						= " ";
 const CString REF_RESOURCE_FLG				= ".R;";

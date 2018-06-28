@@ -110,8 +110,8 @@ BEGIN
                     WS_TABSTOP,13,70,76,10
     CONTROL         "过滤android&java",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,13,86,76,10
-    CONTROL         "显示附属工程",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,102,64,10
+    CONTROL         "保留@Route类",IDC_CHECK_SAVE_ROUTE_CLASS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,13,102,64,10
     LTEXT           "ˇ",IDC_EXPAND_DOWNWARD,147,122,9,8
 END
 

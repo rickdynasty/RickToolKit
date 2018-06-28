@@ -319,12 +319,6 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 	int strLen = 0;
 	while(readFile.ReadString(readLine)) {
 		++lineCount;
-		//debug
-		if(35 == lineCount || 232 == lineCount){
-			int i = 0;
-			i += 2;
-			i = 4;
-		}
 
 		readLine.TrimLeft();
 		readLine.TrimRight();
@@ -530,7 +524,13 @@ void JavaFileAnalyzer::analyzerFile(const CString file){
 			} else {
 				//既然没有找到 类名，那就继续收集improt
 				findPos = readLine.Find(JAVA_FILE_IMPROT_KEY, 0);
-				if(findPos < 0) continue;
+				if(findPos < 0) {
+					// 不是注释、不是import 也没到class，这里就需要判断是否是router标识[这里有个潜规则，前面去掉空格，route的位置就是0]
+					if(0 == readLine.Find(JAVA_FILE_ROUTE_KEY, 0)){
+						jClass->mIsRouteClass = true;
+					}
+					continue;
+				}
 				
 				startPos = findPos + cImprotKeyLen;
 				findPos = readLine.Find(PACKAGE_or_IMPROT_EDN_FLG, startPos);
